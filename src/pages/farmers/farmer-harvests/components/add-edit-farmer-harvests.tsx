@@ -9,7 +9,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormReturn } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/custom/button';
 import {
@@ -19,10 +19,11 @@ import {
   getCollectionCenters,
   updateFarmerHarvests,
   postFarmerHarvests,
+  getUsersWithRole,
 } from '@/helpers/api-helper';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { addAlert } from '@/store/slices/elert-slice';
-import { FormSchema, formSchema } from '../data/form-schema';
+import { BagSchema, FormSchema, formSchema } from '../data/form-schema';
 import {
   Select,
   SelectContent,
@@ -31,7 +32,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import ReactSelect from 'react-select';
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { z } from 'zod';
 import { useLocation } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
@@ -39,30 +40,20 @@ import ThemeSwitch from '@/components/theme-switch';
 import { UserNav } from '@/components/user-nav';
 import { Layout } from '@/components/custom/layout'
 import { Search } from '@/components/search';
+import { camelToSnakeCase, snakeToCamelCase } from '@/lib/utils';
+import { bagSchema, DataSchema } from "../data/schema";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-interface Bag {
-  grossWeight: string;
-  netWeight: string;
-  moistureContent: string;
-  packagingWeight: string;
-  tagNumber: number;
-}
-
-type BagsDataForm = {
-  bagsData: Bag[];
-}
 
 // Custom hook to manage bags data
-const useBagsForm = (form: any) => {
-  const [bags, setBags] = useState<Bag[]>([]);
+const useBagsForm = (form: UseFormReturn<FormSchema>) => {
+  const [bags, setBags] = useState<BagSchema[]>(form.getValues('bagsData.bags') || []);
 
   const addBag = () => {
     setBags([...bags, {
-      grossWeight: '',
-      netWeight: '',
-      moistureContent: '',
-      packagingWeight: '',
-      tagNumber: bags.length + 1
+      grade: '',
+      weight: '',
+      bagNumber: '',
     }]);
   };
 
@@ -70,138 +61,161 @@ const useBagsForm = (form: any) => {
     setBags(bags.filter((_, i) => i !== index));
   };
 
-  const updateBag = (index: number, field: keyof Bag, value: string | number) => {
+  const updateBag = (index: number, field: keyof BagSchema, value: string | number) => {
     const updatedBags = [...bags];
     updatedBags[index] = {
       ...updatedBags[index],
       [field]: value
     };
     setBags(updatedBags);
-    form.setValue('bagsData', updatedBags);
+    form.setValue('bagsData', {
+      bagCount: updatedBags.length,
+      bags: updatedBags
+    });
   };
 
   return { bags, addBag, removeBag, updateBag };
 };
 
 
-// Form schema for bags data
-const BagsFormSchema = formSchema.extend({
-  bagsData: z.array(z.object({
-    grossWeight: z.string(),
-    netWeight: z.string(),
-    moistureContent: z.string(),
-    packagingWeight: z.string(),
-    tagNumber: z.number()
-  }))
-});
-
 // Component for individual bag input fields
 const BagFields = ({ bag, index, updateBag, removeBag }: {
-  bag: Bag;
+  bag: BagSchema;
   index: number;
-  updateBag: (index: number, field: keyof Bag, value: string | number) => void;
+  updateBag: (index: number, field: keyof BagSchema, value: string | number) => void;
   removeBag: (index: number) => void;
-}) => (
-  <div className="flex gap-4 items-end mb-4">
-    <FormItem>
-      <FormLabel>Gross Weight</FormLabel>
-      <FormControl>
-        <Input
-          type="number"
-          value={bag.grossWeight}
-          onChange={(e) => updateBag(index, 'grossWeight', e.target.value)}
-        />
-      </FormControl>
-    </FormItem>
-    <FormItem>
-      <FormLabel>Net Weight</FormLabel>
-      <FormControl>
-        <Input
-          type="number"
-          value={bag.netWeight}
-          onChange={(e) => updateBag(index, 'netWeight', e.target.value)}
-        />
-      </FormControl>
-    </FormItem>
-    <FormItem>
-      <FormLabel>Moisture Content</FormLabel>
-      <FormControl>
-        <Input
-          type="number"
-          value={bag.moistureContent}
-          onChange={(e) => updateBag(index, 'moistureContent', e.target.value)}
-        />
-      </FormControl>
-    </FormItem>
-    <FormItem>
-      <FormLabel>Packaging Weight</FormLabel>
-      <FormControl>
-        <Input
-          type="number"
-          value={bag.packagingWeight}
-          onChange={(e) => updateBag(index, 'packagingWeight', e.target.value)}
-        />
-      </FormControl>
-    </FormItem>
-    <Button type="button" variant="destructive" onClick={() => removeBag(index)}>
-      Remove
-    </Button>
-  </div>
-);
+}) => {
+
+  const form = useForm<BagSchema>({
+    resolver: zodResolver(bagSchema),
+    defaultValues: {}
+  })
+  const bagNumber = useMemo(() => "B" + (index + 1).toString().padStart(3, '0'), [index])
+
+  useEffect(() => {
+    if (!bag.bagNumber) {
+      updateBag(index, 'bagNumber', bagNumber);
+    }
+  }, [bag.bagNumber]);
+
+
+  return (
+    <div className="flex gap-4 items-end mb-4">
+      <Form {...form}>
+        <FormItem>
+          <FormLabel>Bag Number</FormLabel>
+          <FormControl>
+            <Input
+              type="text"
+              value={bag.bagNumber || bagNumber}
+              placeholder="Bag Number"
+              disabled={true}
+              onChange={(e) => updateBag(index, 'bagNumber', e.target.value)}
+            />
+          </FormControl>
+        </FormItem>
+
+        <FormItem>
+          <FormLabel>Weight in KG</FormLabel>
+          <FormControl>
+            <Input
+              type="number"
+              value={bag.weight}
+              placeholder="Weight in KG"
+              onChange={(e) => updateBag(index, 'weight', e.target.value)}
+            />
+          </FormControl>
+        </FormItem>
+
+        <FormItem>
+          <FormLabel>Moisture Content</FormLabel>
+          <FormControl>
+            <Input
+              type="text"
+              value={bag.grade}
+              placeholder="Grade"
+              onChange={(e) => updateBag(index, 'grade', e.target.value)}
+            />
+          </FormControl>
+        </FormItem>
+        <Button type="button" variant="destructive" onClick={() => removeBag(index)}>
+          Remove
+        </Button>
+      </Form>
+    </div>
+  )
+};
+
 interface AddEditFarmerHarvestProps {
-  mode: 'add' | 'edit';
-  //@ts-ignore
-  initialData?: {
-    id: number;
-    farmer: string;
-    farmerName: string;
-    farmerPhoneNumber: string;
-    quantity: string;
-    tagNumber: string;
-    receiptNumber: string;
-    amcos: string;
-    registar: string;
-    registarName: string;
-    collectionCenter: string;
-    crop: string;
-  } | null;
-  handleCancel: () => void;
+  mode: "add" | "edit";
+  initialData?: DataSchema;
+  handleCancel?: () => void;
 }
 
-const AddEditFarmerHarvest = () => {
+
+const AddEditFarmerHarvest = ({ mode, initialData, handleCancel }: AddEditFarmerHarvestProps) => {
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
   const location = useLocation();
-  const initialData = location?.state?.record;
-  const mode = initialData ? 'edit' : 'add';
-  const currentUser = useAppSelector((state:any) => state?.user.userInfo)
+
+  const currentUser = useAppSelector((state: any) => state?.user.userInfo)
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       farmer: initialData?.farmer || '',
-      farmerName: initialData?.farmerName || '',
-      farmerPhoneNumber: initialData?.farmerPhoneNumber || '',
-      quantity: initialData?.quantity || '',
-      tagNumber: initialData?.tagNumber || '',
+      receivedBy: initialData?.receivedBy || '',
+      tumeNumber: initialData?.tumeNumber || '',
       receiptNumber: initialData?.receiptNumber || '',
       amcos: initialData?.amcos || '',
       collectionCenter: initialData?.collectionCenter || '',
+      crop: initialData?.crop || '',
+      grossWeight: initialData?.grossWeight || '',
+      netWeight: initialData?.netWeight || '',
+      packagingWeight: initialData?.packagingWeight || '',
+      moistureContent: initialData?.moistureContent || '',
+      bagsData: initialData?.bagsData || {
+        bagCount: initialData?.bagsData?.bags.length || 0,
+        bags: initialData?.bagsData?.bags || [],
+      },
     },
   });
   const { bags, addBag, removeBag, updateBag } = useBagsForm(form);
   // Fetch Farmers
   const {
     data: farmers,
-    // isLoading:loadFarmers,
+    isLoading: loadFarmers,
     // error: errorFarmers,
   } = useQuery({
     queryKey: ['farmers'],
     queryFn: async () => {
-      const response: any = await getFarmers();
-      return response;
+      const response: any = await getUsersWithRole('farmer');
+      return snakeToCamelCase(response.data);
     },
   });
-  
+
+  const {
+    data: amcosAdmins,
+    isLoading: loadAmcosAdmins,
+  } = useQuery({
+    queryKey: ['amcosAdmins'],
+    queryFn: async () => {
+      const response: any = await getUsersWithRole('amcos_admin');
+      return snakeToCamelCase(response.data);
+    },
+  })
+
+  //Fetch union admins
+  const {
+    data: unionAdmins,
+    isLoading: loadUnionAdmins,
+  } = useQuery({
+    queryKey: ['unionAdmins'],
+    queryFn: async () => {
+      const response: any = await getUsersWithRole('union_admin');
+      return snakeToCamelCase(response.data);
+    },
+  });
+
   // Fetch Crops
   const {
     data: crops,
@@ -211,7 +225,7 @@ const AddEditFarmerHarvest = () => {
     queryKey: ['crops'],
     queryFn: async () => {
       const response: any = await getCrops();
-      return response;
+      return response.data;
     },
   });
 
@@ -222,7 +236,7 @@ const AddEditFarmerHarvest = () => {
     queryKey: ['amcos'],
     queryFn: async () => {
       const response: any = await getAMCOSs();
-      return response;
+      return snakeToCamelCase(response.data);
     },
   });
 
@@ -235,7 +249,7 @@ const AddEditFarmerHarvest = () => {
     queryKey: ['CollectionCenter'],
     queryFn: async () => {
       const response: any = await getCollectionCenters();
-      return response;
+      return snakeToCamelCase(response.data);
     },
   });
 
@@ -246,6 +260,8 @@ const AddEditFarmerHarvest = () => {
       } else {
         return await postFarmerHarvests(data);
       }
+
+
     },
     onSuccess: () => {
       dispatch(
@@ -256,9 +272,12 @@ const AddEditFarmerHarvest = () => {
               : 'FarmerHarvest added successfully!',
           title: mode === 'edit' ? 'Edit Success' : 'Add Success',
           type: 'success',
-        })
+        }),
+
       );
-      queryClient.invalidateQueries({ queryKey: ['faharvests'] });
+      queryClient.invalidateQueries({ queryKey: ['farmer-harvests'] });
+      handleCancel()
+
     },
     onError: (error: any) => {
       dispatch(
@@ -272,45 +291,35 @@ const AddEditFarmerHarvest = () => {
   });
 
   function onSubmit(data: FormSchema) {
-    const finalData = {
-      ...data,
-      farmer: data.farmer?.value,
-      registar:currentUser?.id,
-      registarName: currentUser?.name,
-      amcos: data.amcos?.value,
-      collectionCenter: parseInt(data?.collectionCenter)
-    };
+    const finalData = camelToSnakeCase(data)
     console.log(finalData);
 
     mutation.mutate(finalData);
   }
 
   return (
-    <Layout>
-    {/* ===== Top Heading ===== */}
-    <Layout.Header sticky>
-      <Search />
-      <div className='ml-auto flex items-center space-x-4'>
-        <ThemeSwitch />
-        <UserNav />
-      </div>
-    </Layout.Header>
 
-    <Layout.Body className='mb-8'>
-    <div>
-            <h2 className='text-2xl font-bold tracking-tight'>Add Harvest</h2>
-            <p className='text-muted-foreground mb-3'>
-              Add Farmer Harvest
-            </p>
-          </div>
+    <Dialog open={true} onOpenChange={handleCancel}>
+      <DialogContent className='w-full max-w-7xl '>
+        <DialogHeader>
+          <DialogTitle>
+            {mode === 'edit' ? 'Edit Harvest' : 'Add Harvest'}
+          </DialogTitle>
+          <DialogDescription>
+            {mode === 'edit'
+              ? 'Update the Harvest details.'
+              : 'Enter the Harvest details.'}
+          </DialogDescription>
+        </DialogHeader>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Left Column */}
               <div className="space-y-4">
-               
-               
-                {/* AMCOS Multi-Select Field */}
+
+
+                {/* Select Farmer */}
                 <FormField
                   control={form.control}
                   name="farmer"
@@ -318,147 +327,149 @@ const AddEditFarmerHarvest = () => {
                     <FormItem>
                       <FormLabel>Farmer</FormLabel>
                       <FormControl>
-                        <ReactSelect
-                          options={farmers?.map((fmr: any) => ({
-                            value: fmr.id,
-                            label: `${fmr.firstName} ${fmr.lastName}`,
-                          }))}
-                           className="my-react-select-container"
-                           classNamePrefix="my-react-select"
-                          value={field.value || []}
-                          onChange={(selected:any) =>
-                            form.setValue('farmer', selected)
-                          }
-                          placeholder="Select Farmer"
-                        />
+                        <Select
+                          value={field.value?.toString()}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Farmer" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {loadFarmers ?
+                              <><div>
+                                loading...
+                              </div></> : (
+                                farmers?.map((farmer: any) => (
+                                  <SelectItem
+                                    key={farmer.id}
+                                    value={farmer.id?.toString()}
+                                  >
+                                    {`${farmer.email}`}
+                                  </SelectItem>
+                                ))
+                              )}
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-      
-                {/* Middle Name Field */}
+
+
+                {/* Select Receiver */}
                 <FormField
                   control={form.control}
-                  name="farmerName"
+                  name="receivedBy"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Farmer Name</FormLabel>
+                      <FormLabel>Received by</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter farmer Name" {...field} />
+                        <Select
+                          value={field.value?.toString()}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Collected By" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {loadUnionAdmins && loadAmcosAdmins || (!unionAdmins || !amcosAdmins) ? (
+                              <div>Loading...</div>
+                            ) :
+                              unionAdmins.concat(amcosAdmins ?? []).map((admin: any) => (
+                                <SelectItem
+                                  key={admin.id}
+                                  value={admin.id?.toString()}
+                                >
+                                  {`${admin.email}`}
+                                </SelectItem>
+                              ))
+                            }
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                {/* Phone Number Field */}
+                {/* ID Number Field */}
                 <FormField
                   control={form.control}
-                  name="farmerPhoneNumber"
+                  name="tumeNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
+                      <FormLabel>Tume Number</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter Phone Number" {...field} />
+                        <Input placeholder="Enter Tume Number" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                    {/* Member ID Field */}
-                    <FormField
+                <FormField
                   control={form.control}
-                  name="quantity"
+                  name="grossWeight"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Quantity</FormLabel>
+                      <FormLabel>Gross Weight</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter quantity " type='number' {...field} />
+                        <Input placeholder="Enter Gross Weight" type="text" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                          {/* ID Number Field */}
-                          <FormField
+                <FormField
                   control={form.control}
-                  name="tagNumber"
+                  name="netWeight"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tag Number</FormLabel>
+                      <FormLabel>Net Weight</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter Tag Number" {...field} />
+                        <Input placeholder="Enter Net Weight" type="text" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              
-              <FormField
-                control={form.control}
-                name="grossWeight"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Gross Weight</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter gross weight" type="number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
-              <FormField
-                control={form.control}
-                name="netWeight" 
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Net Weight</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter net weight" type="number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="packagingWeight"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Packaging Weight</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter Packaging Weight" type="text" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="packagingWeight"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Packaging Weight</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter packaging weight" type="number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
-         
               </div>
 
               {/* Right Column */}
               <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="moistureContent"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Moisture Content</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter moisture content" type="number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            
-            <FormField
+                <FormField
+                  control={form.control}
+                  name="moistureContent"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Moisture Content</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter Moisture Content" type="text" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
                   control={form.control}
                   name="receiptNumber"
                   render={({ field }) => (
@@ -472,27 +483,39 @@ const AddEditFarmerHarvest = () => {
                   )}
                 />
 
-                  {/* AMCOS Multi-Select Field */}
-                  <FormField
+                {/* AMCOS Multi-Select Field */}
+                <FormField
                   control={form.control}
                   name="amcos"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>AMCOS</FormLabel>
                       <FormControl>
-                        <ReactSelect
-                          options={amcos?.map((amcos: any) => ({
-                            value: amcos.id,
-                            label: amcos.name,
-                          }))}
-                           className="my-react-select-container"
-                           classNamePrefix="my-react-select"
-                          value={field.value}
-                          onChange={(selected:any) =>
-                            form.setValue('amcos', selected)
-                          }
-                          placeholder="Select AMCOS"
-                        />
+                        <Select
+                          value={field.value?.toString()}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select AMCOS" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {amcos?.length > 0 ? (
+                              amcos.map((amco: any) => (
+                                <SelectItem
+                                  key={amco.id}
+                                  value={amco.id?.toString()}
+                                >
+                                  {amco.name}
+                                </SelectItem>
+                              ))
+                            ) : (
+                              <div>
+                                No AMCOS Found
+                              </div>
+                            )}
+                          </SelectContent>
+
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -510,12 +533,10 @@ const AddEditFarmerHarvest = () => {
                       <FormControl>
                         <Select
                           value={field.value?.toString()}
-                          onValueChange={(value: any) =>
-                            form.setValue('crop', value)
-                          }
+                          onValueChange={(field.onChange)}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Select  Crop" />
+                            <SelectValue placeholder="Select Crop" />
                           </SelectTrigger>
                           <SelectContent>
                             {loadingCrops ? (
@@ -553,9 +574,7 @@ const AddEditFarmerHarvest = () => {
                       <FormControl>
                         <Select
                           value={field.value?.toString()}
-                          onValueChange={(value: any) =>
-                            form.setValue('collectionCenter', value)
-                          }
+                          onValueChange={(field.onChange)}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select Collection center" />
@@ -571,7 +590,7 @@ const AddEditFarmerHarvest = () => {
                                   key={coll.id}
                                   value={coll.id?.toString()}
                                 >
-                                {coll.amcosName}-{coll.name}
+                                  {coll.amcosName}-{coll.name}
                                 </SelectItem>
                               ))
                             ) : (
@@ -586,22 +605,22 @@ const AddEditFarmerHarvest = () => {
                     </FormItem>
                   )}
                 />
-               <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                      <h3 className="text-lg font-medium">Bags</h3>
-                      <Button type="button" onClick={addBag}>Add Bag</Button>
-                      </div>
-                      {bags.map((bag, index) => (
-                      <BagFields
-                        key={index}
-                        bag={bag}
-                        index={index}
-                        updateBag={updateBag}
-                        removeBag={removeBag}
-                      />
-                      ))}
-                    </div>
-              
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-medium">Bags</h3>
+                    <Button type="button" onClick={addBag}>Add Bag</Button>
+                  </div>
+                  {bags.map((bag, index) => (
+                    <BagFields
+                      key={index}
+                      bag={bag}
+                      index={index}
+                      updateBag={updateBag}
+                      removeBag={removeBag}
+                    />
+                  ))}
+                </div>
+
 
                 {/* Submit Button */}
                 <div className="mt-4 ">
@@ -618,8 +637,8 @@ const AddEditFarmerHarvest = () => {
             </div>
           </form>
         </Form>
-        </Layout.Body>
-        </Layout>
+      </DialogContent>
+    </Dialog>
   );
 };
 

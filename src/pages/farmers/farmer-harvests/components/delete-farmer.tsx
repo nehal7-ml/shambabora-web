@@ -33,7 +33,7 @@ const DeleteDialog = ({ id, name, onClose }: DeleteDialogProps) => {
           type: 'success',
         })
       )
-      queryClient.invalidateQueries({ queryKey: ['faharvests'] }) 
+      queryClient.invalidateQueries({ queryKey: ['farmer-harvests'] })
       onClose()
     },
     onError: (error: any) => {

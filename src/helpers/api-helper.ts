@@ -13,6 +13,8 @@ export const postUser = (data: any) => api.create(url.USERS, data);
 export const getUsers = () => api.get(url.USERS);
 export const deleteUser = (id: number, data: any) => api.delete(url.USERS + id, data);
 export const updateUser = (id: number, data: any) => api.patch(url.USERS + id, data);
+export const retrieveUser = (id: string) => api.get(url.USERS + id);
+export const getUsersWithRole = (role:'farmer'| 'amcos_admin' |'union_admin') => api.get(url.USERS , { role });
 
 
 //LOCATION
@@ -120,8 +122,8 @@ export const retrieveFarmerFarms = (id: string) => api.get(url.FARMERS + id);
 
 export const getAllFarmersHarvests = () => api.get(url.FARMERS_HARVERSTS);
 export const postFarmerHarvests = (data: any) => api.create(url.FARMERS_HARVERSTS, data);
-export const deleteFarmerHarvests = (id: number, data: any) => api.delete(url.FARMERS_HARVERSTS + id, data);
-export const updateFarmerHarvests = (id: number, data: any) => api.put(url.FARMERS_HARVERSTS + id, data);
+export const deleteFarmerHarvests = (id: string, data: any) => api.delete(url.FARMERS_HARVERSTS + id, data);
+export const updateFarmerHarvests = (id: string, data: any) => api.patch(url.FARMERS_HARVERSTS + id, data);
 export const retrieveFarmerHarvest = (id: string) => api.get(url.FARMERS_HARVERSTS + id);
 
 //MODULES
