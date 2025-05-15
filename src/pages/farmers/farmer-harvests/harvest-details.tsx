@@ -85,11 +85,9 @@ const HarvestDetailsTable: React.FC<HarvestDetailsTableProps> = ({ harvestData }
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-secondary/5">
-                  <th className="p-3 text-left">Tag Number</th>
-                  <th className="p-3 text-left">Gross Weight ({harvestData?.grossWeight})</th>
-                  <th className="p-3 text-left">Net Weight ({harvestData?.netWeight})</th>
-                  <th className="p-3 text-left">Packaging Weight ({harvestData?.packagingWeight})</th>
-                  <th className="p-3 text-left">Moisture Content ({harvestData?.moistureContent})</th>
+                  <th className="p-3 text-left">Bag Number</th>
+                  <th className="p-3 text-left">Weight({harvestData?.grossWeight})</th>
+                  <th className="p-3 text-left">Grade ({harvestData?.netWeight})</th>
                 </tr>
               </thead>
               <tbody>
