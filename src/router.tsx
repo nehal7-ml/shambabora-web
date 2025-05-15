@@ -82,12 +82,6 @@ const router = createBrowserRouter([
             }),
           },
           {
-            path: 'add-harvest',
-            lazy: async () => ({
-              Component: (await import('@/pages/farmers/farmer-harvests/components/add-edit-farmer-harvests.tsx')).default,
-            }),
-          },
-          {
             path: 'harvest-details/:id',
             lazy: async () => ({
               Component: (await import('@/pages/farmers/farmer-harvests/harvest-details.tsx')).default,
