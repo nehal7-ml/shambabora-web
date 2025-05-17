@@ -35,7 +35,7 @@ export function DataTableToolbar<TData>({
             variant='outline'
             size='sm'
             className='ml-auto hidden h-8 lg:flex'
-            onClick={() =>  navigation('/dashboard/add-harvest')}
+            onClick={handleAdd}
           >
             <PlusCircledIcon className='mr-2 h-4 w-4' />
             Add Harvest

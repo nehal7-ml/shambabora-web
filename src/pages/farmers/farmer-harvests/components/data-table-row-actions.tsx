@@ -22,7 +22,8 @@ interface DataTableRowActionsProps<TData> {
 export function DataTableRowActions<TData>({
   row,
   onDelete,
-  onView
+  onView,
+  onEdit,
 }: DataTableRowActionsProps<TData>) {
   const item = schema.parse(row.original);
 
@@ -39,8 +40,8 @@ export function DataTableRowActions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-[160px]'>
-        <DropdownMenuItem  onClick={() => onView(item)}>View Harvests</DropdownMenuItem>
-        <DropdownMenuItem  onClick={() => {}}>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onView(item)}>View Harvests</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onEdit(item)}>Edit</DropdownMenuItem>
         <DropdownMenuItem onClick={() => onDelete(item)}>
           Delete
           <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>

@@ -12,6 +12,7 @@ import { Package, Scale, Tag } from "lucide-react";
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { retrieveFarmerHarvest } from '@/helpers/api-helper';
+import { snakeToCamelCase } from "@/lib/utils";
 
 // Type definitions
 interface Bag {
@@ -53,20 +54,8 @@ interface HarvestDetailsTableProps {
 }
 
 const HarvestDetailsTable: React.FC<HarvestDetailsTableProps> = ({ harvestData }) => {
-  const bags: Bag[] = React.useMemo(() => {
-    try {
-      return harvestData?.bagsData ? JSON.parse(harvestData?.bagsData) : [];
-    } catch (error) {
-      console.error('Error parsing bags data:', error);
-      return [];
-    }
-  }, [harvestData?.bagsData]);
-  
-  console.log(harvestData?.bagsData);
-  
 
-  console.log(bags);
-  
+
   return (
     <Card className="mt-8">
       <CardHeader>
@@ -96,21 +85,17 @@ const HarvestDetailsTable: React.FC<HarvestDetailsTableProps> = ({ harvestData }
             <table className="w-full">
               <thead>
                 <tr className="border-b bg-secondary/5">
-                  <th className="p-3 text-left">Tag Number</th>
-                  <th className="p-3 text-left">Gross Weight ({harvestData?.uom})</th>
-                  <th className="p-3 text-left">Net Weight ({harvestData?.uom})</th>
-                  <th className="p-3 text-left">Packaging Weight ({harvestData?.uom})</th>
-                  <th className="p-3 text-left">Moisture Content (%)</th>
+                  <th className="p-3 text-left">Bag Number</th>
+                  <th className="p-3 text-left">Weight({harvestData?.grossWeight})</th>
+                  <th className="p-3 text-left">Grade ({harvestData?.netWeight})</th>
                 </tr>
               </thead>
               <tbody>
-                {harvestData?.bagsData?.map((bag:any, index:number) => (
+                {harvestData.bagsData.bags.map((bag: any, index: number) => (
                   <tr key={index} className="border-b">
-                    <td className="p-3">{bag.tagNumber}</td>
-                    <td className="p-3">{bag.grossWeight}</td>
-                    <td className="p-3">{bag.netWeight}</td>
-                    <td className="p-3">{bag.packagingWeight}</td>
-                    <td className="p-3">{bag.moistureContent}</td>
+                    <td className="p-3">{bag.bagNumber}</td>
+                    <td className="p-3">{bag.weight}</td>
+                    <td className="p-3">{bag.grade}</td>
                   </tr>
                 ))}
               </tbody>
@@ -132,8 +117,8 @@ const FarmerDetailsPage: React.FC = () => {
   } = useQuery<HarvestData>({
     queryKey: ['farmer-harvest-details', params?.id],
     queryFn: async () => {
-      const response:any = await retrieveFarmerHarvest(`${params?.id}`);
-      return response;
+      const response: any = await retrieveFarmerHarvest(`${params?.id}`);
+      return snakeToCamelCase(response);
     },
   });
 
@@ -155,10 +140,10 @@ const FarmerDetailsPage: React.FC = () => {
                 {/* Profile Picture */}
                 <div className="flex-shrink-0">
                   <div className="w-32 h-32 rounded-full overflow-hidden bg-secondary/20 flex items-center justify-center">
-                    <CropIcon/>
+                    <CropIcon />
                   </div>
                 </div>
-                
+
                 {/* Farmer Info */}
                 <div className="flex-grow">
                   <div className="flex flex-col md:flex-row justify-between mb-4">
@@ -171,9 +156,9 @@ const FarmerDetailsPage: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex gap-4 mt-4 md:mt-0">
-                     
+
                       <Button variant="default" size="sm"
-                      onClick={() => navigate(`/dashboard/farmer-harvests/${harvestData?.farmer}`)}
+                        onClick={() => navigate(`/dashboard/farmer-harvests/${harvestData?.farmer}`)}
                       >
                         <Eye className="w-4 h-4 mr-2" />
                         View Farmer
@@ -192,7 +177,7 @@ const FarmerDetailsPage: React.FC = () => {
                     </div>
                     <div className="bg-secondary/10 rounded-lg p-4">
                       <p className="text-sm text-muted-foreground">Moisture Content</p>
-                      <p className="text-xl font-semibold">{harvestData?.moistureContent}%</p>
+                      <p className="text-xl font-semibold">{harvestData?.moistureContent}</p>
                     </div>
                   </div>
                 </div>
