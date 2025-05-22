@@ -6,7 +6,6 @@ const api = new APIClient();
 
 export const postLogin = (data: any) => api.create(url.POST_LOGIN_USER, data);
 export const postUserSetup = (data: any) => api.create(url.POST_REGISTER_USER, data);
-export const getDashboard = () => api.get(url.Dashboard);
 
 //USERS
 export const postUser = (data: any) => api.create(url.USERS, data);

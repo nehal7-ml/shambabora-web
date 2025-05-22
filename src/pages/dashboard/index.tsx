@@ -18,27 +18,18 @@ import { IconBuilding, IconPlant2, IconScale, IconTractor } from '@tabler/icons-
 // import useAuthentication from '@/hooks/use-authentication'
 import useToken from '@/hooks/use-token'
 import { useQuery } from '@tanstack/react-query'
-import { getAllFarmersHarvests, getCollectionCenters, getCrops, getDashboard, getFarmers } from '@/helpers/api-helper'
+import { getAllFarmersHarvests, getCollectionCenters, getCrops, getFarmers } from '@/helpers/api-helper'
 
 export default function Dashboard() {
   // const navigate = useNavigate();
 
   const [token, setToken] = useToken('jwtToken', null);
-
-  const { data: dash } = useQuery({
-    queryKey: ["dash"],
-    queryFn: async () => {
-      const response:any = await getDashboard();
-      console.log(response);
-      return response;
-    },
-  });
   const { data: farmers, isLoading } = useQuery({
     queryKey: ["farmers"],
     queryFn: async () => {
       const response:any = await getFarmers();
       console.log(response);
-      return response;
+      return response.data;
     },
   });
 
