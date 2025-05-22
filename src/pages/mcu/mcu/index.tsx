@@ -5,15 +5,31 @@ import { UserNav } from '@/components/user-nav'
 import { DataTable } from './components/data-table'
 import { columns } from './components/columns'
 import { useQuery } from '@tanstack/react-query'
-import { getMCUs } from '@/helpers/api-helper'
+import { getMCUs, getRegions } from '@/helpers/api-helper'
+import { connectArrays } from '@/lib/utils'
 
 export default function District() {
   const { data: mcus, isLoading } = useQuery({
     queryKey: ["mcus"],
     queryFn: async () => {
-      const response: any = await getMCUs();
-      console.log(response);
-      return response;
+      const mcuRes: any = await getMCUs();
+      const regionRonse: any = await getRegions()
+
+      const mcus = connectArrays(mcuRes.data,
+        {
+          region: regionRonse.data,
+        },
+        [
+          {
+            mainKey: 'region',
+            sourceArrayName: 'region',
+            linkedKey: 'id',
+            newPropertyName: 'region'
+          }
+        ]
+
+      )
+      return mcus
     },
   });
   return (
@@ -38,7 +54,7 @@ export default function District() {
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
           {
-            isLoading ? <div>Loading .....</div> : <DataTable data={mcus?.data ?? []} columns={columns} />
+            isLoading ? <div>Loading .....</div> : <DataTable data={mcus ?? []} columns={columns} />
           }
         </div>
       </Layout.Body>
