@@ -31,6 +31,7 @@ import { Checkbox } from '@radix-ui/react-checkbox'
 import { DataTableRowActions } from './data-table-row-actions'
 import DeleteDialog from './delete-crop'
 import { useEffect } from "react"
+import { DataSchema } from '../data/schema'
 //@ts-ignore
 interface DataTableProps<TData, TValue> {
   columns: any
@@ -50,41 +51,43 @@ export function DataTable<TData, TValue>({
   )
   const [sorting, setSorting] = React.useState<SortingState>([])
 
-   // Modal states for Add/Edit
-   const [showModal, setShowModal] = React.useState(false)
-   const [showDeleteModal, setShowDeleteModal] = React.useState(false)
-   const [mode, setMode] = React.useState<'add' | 'edit'>('add')
-   const [initialData, setInitialData] = React.useState<{ id:number , name: string, type:string,  uom: number,
-    packaging: string } | null>(
-     null
-   )
+  // Modal states for Add/Edit
+  const [showModal, setShowModal] = React.useState(false)
+  const [showDeleteModal, setShowDeleteModal] = React.useState(false)
+  const [mode, setMode] = React.useState<'add' | 'edit'>('add')
+  const [initialData, setInitialData] = React.useState<{
+    id: number, name: string, type: string, uom: number,
+    packaging: string
+  } | null>(
+    null
+  )
 
-    // Handle Add/Edit actions
+  // Handle Add/Edit actions
   const handleAdd = () => {
     setMode('add')
-    setInitialData(null) 
+    setInitialData(null)
     setShowModal(true)
   }
 
-  const handleEdit = (rowData: { name: string, id:number, type:string, uom:number, packaging: string  }) => {
+  const handleEdit = (rowData: { name: string, id: number, type: string, uom: number, packaging: string }) => {
     setMode('edit')
-    setInitialData(rowData) 
+    setInitialData(rowData)
     setShowModal(true)
   }
 
   const handleCancel = () => {
-    setShowModal(false) 
+    setShowModal(false)
     setShowDeleteModal(false);
   }
- 
 
-  const handleDelete = (rowData:  {  name: string, id:number, type:string, uom:number, packaging: string}) => {
-    setInitialData(rowData) 
+
+  const handleDelete = (rowData: { name: string, id: number, type: string, uom: number, packaging: string }) => {
+    setInitialData(rowData)
     setShowDeleteModal(true)
   }
 
 
-   const getColumns = React.useCallback((): ColumnDef<TData>[] => [
+  const getColumns = React.useCallback((): ColumnDef<DataSchema>[] => [
     {
       id: 'select',
       header: ({ table }) => (
@@ -136,6 +139,7 @@ export function DataTable<TData, TValue>({
       enableHiding: false,
     },
     {
+      accessorFn: row => row.type.name,
       accessorKey: 'type',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Type' />
@@ -153,6 +157,7 @@ export function DataTable<TData, TValue>({
       enableHiding: false,
     },
     {
+      accessorFn: row => row.uom.name,
       accessorKey: 'uom',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Unit of measure' />
@@ -197,7 +202,7 @@ export function DataTable<TData, TValue>({
 
   const table = useReactTable({
     data,
-    columns:getColumns(),
+    columns: getColumns(),
     state: {
       sorting,
       columnVisibility,
@@ -219,7 +224,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className='space-y-4'>
-      <DataTableToolbar table={table} handleAdd={handleAdd}/>
+      <DataTableToolbar table={table} handleAdd={handleAdd} />
       <div className='rounded-md border'>
         <Table>
           <TableHeader>
@@ -231,9 +236,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   )
                 })}
@@ -246,7 +251,7 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
-                  // onDoubleClick={() => handleEdit(row)}
+                // onDoubleClick={() => handleEdit(row)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -280,7 +285,7 @@ export function DataTable<TData, TValue>({
         />
       )}
       {showDeleteModal && (
-        <DeleteDialog id={initialData?.id} name={initialData?.name} onClose={handleCancel}        
+        <DeleteDialog id={initialData?.id} name={initialData?.name} onClose={handleCancel}
         />
       )}
     </div>
