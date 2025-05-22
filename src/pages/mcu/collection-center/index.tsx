@@ -12,14 +12,14 @@ export default function Region() {
   const { data: collectionCenters, isLoading } = useQuery({
     queryKey: ["collectionCenters"],
     queryFn: async () => {
-      const response:any = await getCollectionCenters();
+      const response: any = await getCollectionCenters();
       console.log(response);
       return response;
     },
   });
 
   console.log(collectionCenters);
-  
+
   return (
     <Layout>
       {/* ===== Top Heading ===== */}
@@ -36,14 +36,14 @@ export default function Region() {
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>Collection Centers </h2>
             <p className='text-muted-foreground'>
-              Here&apos;s a list of your collection centers 
+              Here&apos;s a list of your collection centers
             </p>
           </div>
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-         {
-          isLoading ? <div>Loading .....</div>:  <DataTable data={collectionCenters} columns={columns} />
-         }
+          {
+            isLoading ? <div>Loading .....</div> : <DataTable data={collectionCenters?.data ?? []} columns={columns} />
+          }
         </div>
       </Layout.Body>
     </Layout>

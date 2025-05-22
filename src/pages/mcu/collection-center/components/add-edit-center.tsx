@@ -20,10 +20,10 @@ import { z } from 'zod'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/custom/button'
 import {
- getRVillages,
- getAMCOSs,
- postCollectionCenter,
- updateCollectionCenter
+  getRVillages,
+  getAMCOSs,
+  postCollectionCenter,
+  updateCollectionCenter
 } from '@/helpers/api-helper'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { addAlert } from '@/store/slices/elert-slice'
@@ -70,7 +70,7 @@ const AddEditCollectionCenter = ({ mode, initialData, handleCancel }: AddEditCol
     queryFn: async () => {
       const response: any = await getRVillages()
       console.log(response)
-      return response
+      return response.data
     },
   })
 
@@ -79,7 +79,7 @@ const AddEditCollectionCenter = ({ mode, initialData, handleCancel }: AddEditCol
     queryFn: async () => {
       const response: any = await getAMCOSs()
       console.log(response)
-      return response
+      return response.data
     },
   })
 
@@ -119,10 +119,10 @@ const AddEditCollectionCenter = ({ mode, initialData, handleCancel }: AddEditCol
   })
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-    const finalData = { 
+    const finalData = {
       ...data,
-      amcos: parseInt(data.amcos),
-      village: parseInt(data.village),
+      amcos: (data.amcos),
+      village: (data.village),
     }
     mutation.mutate(finalData)
   }
@@ -162,39 +162,39 @@ const AddEditCollectionCenter = ({ mode, initialData, handleCancel }: AddEditCol
                 name='amcos'
                 render={({ field }) => (
                   <FormItem>
-                  <FormLabel>Amcos</FormLabel>
-                  <FormControl>
-                    <Select
-                      value={field.value?.toLocaleString()}
-                      onValueChange={(value: any) => {
-                        form.setValue('amcos', value)
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder='Select a Amcos' />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {loadAmcos ? (
-                          <div>Loading...</div>
-                        ) : amcoss?.length > 0 ? (
-                          amcoss.map((ctyp: any) => (
-                            <SelectItem
-                              key={ctyp.id}
-                              value={ctyp.id.toString()}
-                            >
-                              {ctyp.name}
+                    <FormLabel>Amcos</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value?.toLocaleString()}
+                        onValueChange={(value: any) => {
+                          form.setValue('amcos', value)
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder='Select a Amcos' />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {loadAmcos ? (
+                            <div>Loading...</div>
+                          ) : amcoss?.length > 0 ? (
+                            amcoss.map((ctyp: any) => (
+                              <SelectItem
+                                key={ctyp.id}
+                                value={ctyp.id.toString()}
+                              >
+                                {ctyp.name}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem disabled value='none'>
+                              No amcos type found
                             </SelectItem>
-                          ))
-                        ) : (
-                          <SelectItem disabled value=''>
-                            No amcos type found
-                          </SelectItem>
-                        )}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
               />
 
@@ -223,11 +223,11 @@ const AddEditCollectionCenter = ({ mode, initialData, handleCancel }: AddEditCol
                                 key={unit.id}
                                 value={unit.id.toString()}
                               >
-                               {unit.wardName}-{unit.name}
+                                {unit.wardName}-{unit.name}
                               </SelectItem>
                             ))
                           ) : (
-                            <SelectItem disabled value=''>
+                            <SelectItem disabled value='none'>
                               No units found
                             </SelectItem>
                           )}
@@ -239,7 +239,7 @@ const AddEditCollectionCenter = ({ mode, initialData, handleCancel }: AddEditCol
                 )}
               />
 
-  
+
               <Button
                 type='submit'
                 className='btn'

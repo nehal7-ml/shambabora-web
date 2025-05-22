@@ -5,15 +5,30 @@ import { UserNav } from '@/components/user-nav'
 import { DataTable } from './components/data-table'
 import { columns } from './components/columns'
 import { useQuery } from '@tanstack/react-query'
-import { getRVillages } from '@/helpers/api-helper'
+import { getRVillages, getRWards } from '@/helpers/api-helper'
 
 export default function Ward() {
   const { data: villages, isLoading } = useQuery({
     queryKey: ["villages"],
     queryFn: async () => {
-      const response:any = await getRVillages();
-      console.log(response);
-      return response;
+      const [villagesResponse, wardsResponse] = await Promise.all([
+        getRVillages(),
+        getRWards()
+      ]);
+      
+      // Map village data with ward names
+      const villagesWithWards = villagesResponse.data.map((village: any) => {
+        const ward = wardsResponse.data.find((w: any) => w.id === village.ward);
+        return {
+          ...village,
+          wardName: ward?.name || 'Unknown Ward'
+        };
+      });
+
+      return {
+        ...villagesResponse,
+        data: villagesWithWards
+      };
     },
   });
   return (
@@ -38,7 +53,7 @@ export default function Ward() {
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
         {
-          isLoading ? <div>Loading .....</div>:  <DataTable data={villages} columns={columns} />
+          isLoading ? <div>Loading .....</div>:  <DataTable data={villages.data} columns={columns} />
          }
         </div>
       </Layout.Body>

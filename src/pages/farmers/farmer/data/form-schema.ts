@@ -3,22 +3,21 @@ import { z } from 'zod';
 
 export const formSchema = z.object({
   firstName: z.string().min(1, { message: 'Please enter first name' }),
-  middleName: z.string().min(1, { message: 'Please enter middle name' }),
   lastName: z.string().min(1, { message: 'Please enter last name' }),
   dob: z
-  .string()
-  .min(1, { message: 'Please enter Date of Birth' })
-  .refine((date) => !isNaN(Date.parse(date)), {
-    message: 'Invalid Date',
-  })
-  .transform((date) => new Date(date)),
+    .string()
+    .min(1, { message: 'Please enter Date of Birth' })
+    .refine((date) => !isNaN(Date.parse(date)), {
+      message: 'Invalid Date',
+    })
+    .transform((date) => new Date(date)),
   idType: z.string().min(1, { message: 'Please select ID Type' }),
   sex: z.string().min(1, { message: 'Please select sex' }),
   idNumber: z.string().min(1, { message: 'Please enter ID number' }),
   phoneNumber: z.string().min(1, { message: 'Please enter phone number' }),
   amcosMemberId: z.string().min(1, { message: 'Please enter AMCOS Member ID' }),
-  mainCrop: z.string().min(1, { message: 'Please select main crop' }).transform(Number),
-  secondaryCrop: z.string().min(1, { message: 'Please select secondary crop' }).transform(Number),
+  // mainCrop: z.string().min(1, { message: 'Please select main crop' }).transform(Number),
+  // secondaryCrop: z.string().min(1, { message: 'Please select secondary crop' }).transform(Number),
   educationLevel: z.enum([
     "PRIMARY",
     "SECONDARY",
@@ -32,7 +31,7 @@ export const formSchema = z.object({
   ], {
     errorMap: () => ({ message: "Please select a valid education level" }),
   }),
-  
+
   image: z.any(),
   amcos: z.any(),
   ttbNumber: z.string().optional(),

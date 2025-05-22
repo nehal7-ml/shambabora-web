@@ -1,26 +1,34 @@
 import { z } from 'zod'
 
+
 export const schema = z.object({
-  id: z.number(),
-  
-  firstName: z.string(),
-  middleName: z.string(),
-  lastName: z.string(),
-  
-  sex: z.string(),
-  
-  idType: z.string(),
-  idNumber: z.string(),
-  
-  dob: z.string().refine((val) => !isNaN(Date.parse(val))).transform((val) => new Date(val)),
-  
-  phoneNumber: z.string().regex(/^\d+$/),
-  
-  amcosMemberID: z.string(),
-  
-  mainCrop: z.number(),
-  secondaryCrop: z.number(),
-  
+  id: z.string(),
+
+  firstName: z.string().nullable(),
+  lastName: z.string().nullable(),
+
+  sex: z.string().nullable().optional(),
+
+  idType: z.string().nullable(),
+  idNumber: z.string().nullable(),
+
+  dob: z.string().nullable().refine((val) => !val || !isNaN(Date.parse(val))).transform((val) => new Date(val)),
+
+  educationLevel: z.string().nullable(),
+
+  driversLicense: z.string().nullable(),
+  tinNumber: z.string().nullable(),
+  ttbNumber: z.string().nullable(),
+  voterId: z.string().nullable(),
+
+
+  phoneNumber: z.string().regex(/^\d+$/).nullable(),
+
+  amcosMemberId: z.string().nullable(),
+
+  mainCrop: z.number().nullable().optional(),
+  secondaryCrop: z.number().nullable().optional(),
+
   amcos: z.any(),
 });
 

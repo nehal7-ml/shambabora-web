@@ -49,118 +49,118 @@ export function DataTable<TData, TValue>({
     []
   )
   const [sorting, setSorting] = React.useState<SortingState>([])
-     // Modal states for Add/Edit
-     const [showModal, setShowModal] = React.useState(false)
-     const [showDeleteModal, setShowDeleteModal] = React.useState(false)
-     const [mode, setMode] = React.useState<'add' | 'edit'>('add')
-     const [initialData, setInitialData] = React.useState<{ name: string, id:number, region:any  } | null>(
-       null
-     )
-  
-      // Handle Add/Edit actions
-    const handleAdd = () => {
-      setMode('add')
-      setInitialData(null) 
-      setShowModal(true)
-    }
-  
-    const handleEdit = (rowData: { name: string, id:number, region:any }) => {
-      setMode('edit')
-      setInitialData(rowData) 
-      setShowModal(true)
-    }
-  
-    const handleCancel = () => {
-      setShowModal(false) 
-      setShowDeleteModal(false);
-    }
-   
-  
-    const handleDelete = (rowData: { name: string, id:number, region:any  }) => {
-      setInitialData(rowData) 
-      setShowDeleteModal(true)
-    }
-  
+  // Modal states for Add/Edit
+  const [showModal, setShowModal] = React.useState(false)
+  const [showDeleteModal, setShowDeleteModal] = React.useState(false)
+  const [mode, setMode] = React.useState<'add' | 'edit'>('add')
+  const [initialData, setInitialData] = React.useState<{ name: string, id: number, region: any } | null>(
+    null
+  )
 
-    const getColumns = React.useCallback((): ColumnDef<TData>[] => [
-      {
-        id: 'select',
-        header: ({ table }) => (
-          <Checkbox
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && 'indeterminate') as CheckedState
-            }
-            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-            aria-label='Select all'
-            className='translate-y-[2px]'
-          />
-        ),
-        cell: ({ row }) => (
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label='Select row'
-            className='translate-y-[2px]'
-          />
-        ),
-        enableSorting: false,
-        enableHiding: false,
+  // Handle Add/Edit actions
+  const handleAdd = () => {
+    setMode('add')
+    setInitialData(null)
+    setShowModal(true)
+  }
+
+  const handleEdit = (rowData: { name: string, id: number, region: any }) => {
+    setMode('edit')
+    setInitialData(rowData)
+    setShowModal(true)
+  }
+
+  const handleCancel = () => {
+    setShowModal(false)
+    setShowDeleteModal(false);
+  }
+
+
+  const handleDelete = (rowData: { name: string, id: number, region: any }) => {
+    setInitialData(rowData)
+    setShowDeleteModal(true)
+  }
+
+
+  const getColumns = React.useCallback((): ColumnDef<TData>[] => [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate') as CheckedState
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label='Select all'
+          className='translate-y-[2px]'
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label='Select row'
+          className='translate-y-[2px]'
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: 'id',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='SNO' />
+      ),
+      cell: ({ row, }) => <div className='w-[80px]'>{row.index + 1}</div>,
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: 'name',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Mcu Name' />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className='flex space-x-2'>
+            <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-[31rem]'>
+              {row.getValue('name')}
+            </span>
+          </div>
+        )
       },
-      {
-        accessorKey: 'id',
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title='SNO' />
-        ),
-        cell: ({ row, }) => <div className='w-[80px]'>{row.index + 1}</div>,
-        enableSorting: false,
-        enableHiding: false,
+      enableSorting: true,
+      enableHiding: false,
+    },
+    {
+      accessorKey: 'region',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Region' />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className='flex space-x-2'>
+            <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-[31rem]'>
+              {row.getValue('region')}
+            </span>
+          </div>
+        )
       },
-      {
-        accessorKey: 'name',
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title='Mcu Name' />
-        ),
-        cell: ({ row }) => {
-          return (
-            <div className='flex space-x-2'>
-              <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-[31rem]'>
-                {row.getValue('name')}
-              </span>
-            </div>
-          )
-        },
-        enableSorting: true,
-        enableHiding: false,
-      },
-      {
-        accessorKey: 'regionName',
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title='Region' />
-        ),
-        cell: ({ row }) => {
-          return (
-            <div className='flex space-x-2'>
-              <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-[31rem]'>
-                {row.getValue('regionName')}
-              </span>
-            </div>
-          )
-        },
-        enableSorting: true,
-        enableHiding: true,
-      },
-      {
-        id: 'actions',
-        cell: ({ row }) => (
-          <DataTableRowActions row={row} onEdit={handleEdit} onDelete={handleDelete} />
-        ),
-      },
-    ], [handleEdit, handleDelete])
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      id: 'actions',
+      cell: ({ row }) => (
+        <DataTableRowActions row={row} onEdit={handleEdit} onDelete={handleDelete} />
+      ),
+    },
+  ], [handleEdit, handleDelete])
 
   const table = useReactTable({
     data,
-    columns:getColumns(),
+    columns: getColumns(),
     state: {
       sorting,
       columnVisibility,
@@ -182,7 +182,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className='space-y-4'>
-      <DataTableToolbar table={table} handleAdd={handleAdd}/>
+      <DataTableToolbar table={table} handleAdd={handleAdd} />
       <div className='rounded-md border'>
         <Table>
           <TableHeader>
@@ -194,9 +194,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   )
                 })}
@@ -243,7 +243,7 @@ export function DataTable<TData, TValue>({
         />
       )}
       {showDeleteModal && (
-        <DeleteDialog id={initialData?.id} name={initialData?.name} onClose={handleCancel}       
+        <DeleteDialog id={initialData?.id} name={initialData?.name} onClose={handleCancel}
         />
       )}
     </div>

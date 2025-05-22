@@ -23,13 +23,14 @@ import {
 } from '@/components/ui/table'
 import { DataTablePagination } from '../components/data-table-pagination'
 import { DataTableToolbar } from '../components/data-table-toolbar'
-import AddEditRegion from './add-edit-farmer-harvests'
+import AddEditHarvest from './add-edit-farmer-harvests'
 import { DataTableColumnHeader } from './data-table-column-header'
 import { Checkbox } from '@radix-ui/react-checkbox'
 import { DataTableRowActions } from './data-table-row-actions'
 import DeleteDialog from './delete-farmer'
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom'
+import { DataSchema } from "../data/schema"
 //@ts-ignore
 interface DataTableProps<TData, TValue> {
   columns: any
@@ -47,37 +48,36 @@ export function DataTable<TData, TValue>({
     []
   )
   const [sorting, setSorting] = React.useState<SortingState>([])
-   const navigate = useNavigate();
-   // Modal states for Add/Edit
-   const [showModal, setShowModal] = React.useState(false)
-   const [showDeleteModal, setShowDeleteModal] = React.useState(false)
-   const [mode, setMode] = React.useState<'add' | 'edit'>('add')
-   const [initialData, setInitialData] = React.useState<{ id:number , name: string } | null>(
-     null
-   )
+  const navigate = useNavigate();
+  // Modal states for Add/Edit
+  const [showModal, setShowModal] = React.useState(false)
+  const [showDeleteModal, setShowDeleteModal] = React.useState(false)
+  const [mode, setMode] = React.useState<'add' | 'edit'>('add')
+  const [initialData, setInitialData] = React.useState<DataSchema | null>(
+    null
+  )
 
-    // Handle Add/Edit actionavins
+  // Handle Add/Edit actionavins
   const handleAdd = () => {
+    setInitialData(null)
     setMode('add')
-    setInitialData(null) 
     setShowModal(true)
   }
 
-  const handleEdit = (rowData: { name: string, id:number }) => {
+  const handleEdit = (rowData: DataSchema) => {
     setMode('edit')
-    setInitialData(rowData) 
-    navigate(`/dashboard/add-harvest/`, { state: { record: rowData } })
+    setInitialData(rowData)
     setShowModal(true)
   }
 
   const handleCancel = () => {
-    setShowModal(false) 
+    setShowModal(false)
     setShowDeleteModal(false);
   }
- 
 
-  const handleDelete = (rowData: { name: string, id:number }) => {
-    setInitialData(rowData) 
+
+  const handleDelete = (rowData: DataSchema) => {
+    setInitialData(rowData)
     setShowDeleteModal(true)
   }
 
@@ -92,8 +92,8 @@ export function DataTable<TData, TValue>({
             table.getIsAllPageRowsSelected()
               ? true
               : table.getIsSomePageRowsSelected()
-              ? 'indeterminate'
-              : false
+                ? 'indeterminate'
+                : false
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label='Select all'
@@ -120,24 +120,10 @@ export function DataTable<TData, TValue>({
       enableSorting: false,
       enableHiding: false,
     },
-    // {
-    //   accessorKey: 'farmer',
-    //   header: ({ column }) => <DataTableColumnHeader column={column} title='Farmer ID' />,
-    //   cell: ({ row }) => <span>{row.getValue('farmer')}</span>,
-    //   enableSorting: true,
-    //   enableHiding: false,
-    // },
     {
-      accessorKey: 'farmerName',
-      header: ({ column }) => <DataTableColumnHeader column={column} title='Farmer Name' />,
-      cell: ({ row }) => <span>{row.getValue('farmerName')}</span>,
-      enableSorting: true,
-      enableHiding: false,
-    },
-    {
-      accessorKey: 'farmerPhoneNumber',
-      header: ({ column }) => <DataTableColumnHeader column={column} title='Phone Number' />,
-      cell: ({ row }) => <span>{row.getValue('farmerPhoneNumber')}</span>,
+      accessorKey: 'farmer',
+      header: ({ column }) => <DataTableColumnHeader column={column} title='Farmer ID' />,
+      cell: ({ row }) => <span>{row.getValue('farmer')}</span>,
       enableSorting: true,
       enableHiding: false,
     },
@@ -148,24 +134,11 @@ export function DataTable<TData, TValue>({
       enableSorting: true,
       enableHiding: false,
     },
+
     {
-      accessorKey: 'uom',
-      header: ({ column }) => <DataTableColumnHeader column={column} title='Unit of Measure' />,
-      cell: ({ row }) => <span>{row.getValue('uom')}</span>,
-      enableSorting: true,
-      enableHiding: false,
-    },
-    {
-      accessorKey: 'packaging',
-      header: ({ column }) => <DataTableColumnHeader column={column} title='Packaging' />,
-      cell: ({ row }) => <span>{row.getValue('packaging')}</span>,
-      enableSorting: true,
-      enableHiding: false,
-    },
-    {
-      accessorKey: 'tagNumber',
+      accessorKey: 'tumeNumber',
       header: ({ column }) => <DataTableColumnHeader column={column} title='Tag Number' />,
-      cell: ({ row }) => <span>{row.getValue('tagNumber')}</span>,
+      cell: ({ row }) => <span>{row.getValue('tumeNumber')}</span>,
       enableSorting: true,
       enableHiding: false,
     },
@@ -176,51 +149,19 @@ export function DataTable<TData, TValue>({
       enableSorting: true,
       enableHiding: false,
     },
-
     {
-      accessorKey: 'amcosName',
-      header: ({ column }) => <DataTableColumnHeader column={column} title='AMCOS Name' />,
-      cell: ({ row }) => <span>{row.getValue('amcosName')}</span>,
-      enableSorting: true,
-      enableHiding: false,
-    },
-
-    {
-      accessorKey: 'receivedByName',
-      header: ({ column }) => <DataTableColumnHeader column={column} title='Registrar Name' />,
-      cell: ({ row }) => <span>{row.getValue('receivedByName')}</span>,
-      enableSorting: true,
-      enableHiding: false,
-    },
-
-    {
-      accessorKey: 'cropName',
+      accessorKey: 'crop',
       header: ({ column }) => <DataTableColumnHeader column={column} title='Crop Name' />,
-      cell: ({ row }) => <span>{row.getValue('cropName')}</span>,
+      cell: ({ row }) => <span>{row.getValue('crop')}</span>,
       enableSorting: true,
       enableHiding: false,
     },
 
     {
-      accessorKey: 'cropGradeName',
-      header: ({ column }) => <DataTableColumnHeader column={column} title='Crop Grade Name' />,
-      cell: ({ row }) => <span>{row.getValue('cropGradeName')}</span>,
-      enableSorting: true,
-      enableHiding: false,
-    },
-
-    {
-      accessorKey: 'collectionCenterName',
-      header: ({ column }) => <DataTableColumnHeader column={column} title='Collection Center Name' />,
-      cell: ({ row }) => <span>{row.getValue('collectionCenterName')}</span>,
-      enableSorting: true,
-      enableHiding: false,
-    },
-    {
-      accessorKey: 'receivedAt',
+      accessorKey: 'createdAt',
       header: ({ column }) => <DataTableColumnHeader column={column} title='Received At' />,
       cell: ({ row }) => (
-        <span>{format(new Date(row.getValue('receivedAt')), 'dd MMM yyyy')}</span>
+        <span>{format(new Date(row.getValue('createdAt')), 'dd MMM yyyy')}</span>
       ),
       enableSorting: true,
       enableHiding: false,
@@ -228,18 +169,16 @@ export function DataTable<TData, TValue>({
     {
       id: 'actions',
       cell: ({ row }) => (
-        <DataTableRowActions row={row} onEdit={()=>  {
-          navigate(`/dashboard/add-harvest/`)
-        }} onDelete={handleDelete} onView={() => {
+        <DataTableRowActions row={row} onEdit={handleEdit} onDelete={handleDelete} onView={() => {
           navigate(`/dashboard/harvest-details/${row.getValue('id')}`)
         }} />
       ),
     },
   ], [handleEdit, handleDelete]);
-  
+
   const table = useReactTable({
     data,
-    columns:getColumns(),
+    columns: getColumns(),
     state: {
       sorting,
       columnVisibility,
@@ -259,10 +198,10 @@ export function DataTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
 
- 
+
   return (
     <div className='space-y-4'>
-      <DataTableToolbar table={table} handleAdd={handleAdd}/>
+      <DataTableToolbar table={table} handleAdd={handleAdd} />
       <div className='rounded-md border'>
         <Table>
           <TableHeader>
@@ -274,9 +213,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   )
                 })}
@@ -289,7 +228,7 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
-                  // onDoubleClick={() => handleEdit(row)}
+                // onDoubleClick={() => handleEdit(row)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -315,9 +254,15 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <DataTablePagination table={table} />
-   
+      {showModal && (
+        <AddEditHarvest
+          mode={mode}
+          initialData={mode == 'add' ? null : initialData}
+          handleCancel={handleCancel}
+        />
+      )}
       {showDeleteModal && (
-        <DeleteDialog id={initialData?.id} name={initialData?.name} onClose={handleCancel}        
+        <DeleteDialog id={initialData?.id} name={initialData?.receiptNumber} onClose={handleCancel}
         />
       )}
     </div>

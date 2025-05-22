@@ -12,14 +12,14 @@ export default function Region() {
   const { data: crops, isLoading } = useQuery({
     queryKey: ["crops"],
     queryFn: async () => {
-      const response:any = await getCrops();
+      const response: any = await getCrops();
       console.log("crops query:", response);
       return response;
     },
   });
 
-  console.log("crops",crops);
-  
+  console.log("crops", crops);
+
   return (
     <Layout>
       {/* ===== Top Heading ===== */}
@@ -36,14 +36,14 @@ export default function Region() {
           <div>
             <h2 className='text-2xl font-bold tracking-tight'>Crop </h2>
             <p className='text-muted-foreground'>
-              Here&apos;s a list of your crop 
+              Here&apos;s a list of your crop
             </p>
           </div>
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-         {
-          isLoading ? <div>Loading .....</div>:  <DataTable data={crops.data} columns={columns} />
-         }
+          {
+            isLoading ? <div>Loading .....</div> : <DataTable data={crops?.data ?? []} columns={columns} />
+          }
         </div>
       </Layout.Body>
     </Layout>

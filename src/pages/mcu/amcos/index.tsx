@@ -7,19 +7,20 @@ import { columns } from './components/columns'
 // import { regions } from './data/data'
 import { useQuery } from '@tanstack/react-query'
 import { getAMCOSs } from '@/helpers/api-helper'
+import { snakeToCamelCase } from "@/lib/utils"
 
 export default function Region() {
   const { data: amcos, isLoading } = useQuery({
     queryKey: ["amcos"],
     queryFn: async () => {
-      const response:any = await getAMCOSs();
+      const response: any = await getAMCOSs();
       console.log(response);
-      return response;
+      return snakeToCamelCase(response);
     },
   });
 
   console.log(amcos);
-  
+
   return (
     <Layout>
       {/* ===== Top Heading ===== */}
@@ -41,9 +42,9 @@ export default function Region() {
           </div>
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-         {
-          isLoading ? <div>Loading .....</div>:  <DataTable data={amcos} columns={columns} />
-         }
+          {
+            isLoading ? <div>Loading .....</div> : <DataTable data={amcos?.data ?? []} columns={columns} />
+          }
         </div>
       </Layout.Body>
     </Layout>

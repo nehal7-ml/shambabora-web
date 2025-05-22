@@ -36,7 +36,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { camelToSnakeCase } from '@/lib/utils'
 
 interface AddEditFarmerProps {
   mode: 'add' | 'edit'
@@ -44,7 +45,6 @@ interface AddEditFarmerProps {
   initialData?: {
     id: number
     firstName: string
-    middleName: string
     lastName: string
     sex: string
     idNumber: string
@@ -52,15 +52,15 @@ interface AddEditFarmerProps {
     dob: Date
     phoneNumber: string
     educationLevel:
-      | 'PRIMARY'
-      | 'SECONDARY'
-      | 'HIGH_SCHOOL'
-      | 'CERTIFICATE'
-      | 'DIPLOMA'
-      | 'UNIVERSITY_GRADUATE'
-      | 'UNIVERSITY_MASTERS'
-      | 'UNIVERSITY_PHD'
-      | 'NON_FORMAL_EDUCATION'
+    | 'PRIMARY'
+    | 'SECONDARY'
+    | 'HIGH_SCHOOL'
+    | 'CERTIFICATE'
+    | 'DIPLOMA'
+    | 'UNIVERSITY_GRADUATE'
+    | 'UNIVERSITY_MASTERS'
+    | 'UNIVERSITY_PHD'
+    | 'NON_FORMAL_EDUCATION'
     amcosMemberId: string
     amcos: number[]
     image: string
@@ -68,8 +68,8 @@ interface AddEditFarmerProps {
     tinNumber: string
     voterId: string
     driversLicense: string
-    mainCrop: number
-    secondaryCrop: number
+    // mainCrop: number
+    // secondaryCrop: number
   } | null
   handleCancel: () => void
 }
@@ -97,7 +97,6 @@ const AddEditFarmer = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       firstName: initialData?.firstName || '',
-      middleName: initialData?.middleName || '',
       lastName: initialData?.lastName || '',
       sex: initialData?.sex || '',
       idNumber: initialData?.idNumber || '',
@@ -105,9 +104,10 @@ const AddEditFarmer = ({
       //@ts-ignore
       dob: initialData?.dob ? initialData.dob.toISOString().split('T')[0] : '',
       phoneNumber: initialData?.phoneNumber || '',
-      educationLevel: initialData?.educationLevel || 'PRIMARY',
+      //@ts-ignore
+      educationLevel: initialData?.educationLevel || '',
       amcosMemberId: initialData?.amcosMemberId || '',
-      amcos: [],
+      amcos: initialData?.amcos ? [initialData.amcos] : [],
       image: initialData?.image || '',
       ttbNumber: initialData?.ttbNumber || '',
       tinNumber: initialData?.tinNumber || '',
@@ -121,7 +121,7 @@ const AddEditFarmer = ({
     queryKey: ['crops'],
     queryFn: async () => {
       const response: any = await getCrops()
-      return response
+      return response.data
     },
   })
 
@@ -133,12 +133,14 @@ const AddEditFarmer = ({
     queryKey: ['amcos'],
     queryFn: async () => {
       const response: any = await getAMCOSs()
-      return response
+      return response.data
     },
   })
 
+
   const mutation = useMutation({
     mutationFn: async (data: any) => {
+
       if (mode === 'edit' && initialData) {
         return await updateFarmer(initialData.id, data)
       } else {
@@ -171,17 +173,22 @@ const AddEditFarmer = ({
   })
 
   function onSubmit(data: FormSchema) {
-    const finalData = {
+    let finalData = {
       ...data,
-      amcos: data.amcos[0],
-      educationLeveL: data.educationLevel,
+      amcos: data.amcos[0]
     }
     if (imageBase64) {
       finalData.image = imageBase64
     }
 
+    delete finalData.image // remove line when Image is added to DataBase
+
+    finalData = camelToSnakeCase(finalData);
+
     mutation.mutate(finalData)
   }
+
+
 
   return (
     <Dialog open={true} onOpenChange={handleCancel}>
@@ -211,7 +218,7 @@ const AddEditFarmer = ({
                       <FormControl>
                         {/* @ts-ignore */}
                         <Input
-                          placeholder='Enter First Name'
+                          placeholder='Farmer Image'
                           type='file'
                           onChange={(e) =>
                             handleImageChange(e?.target?.files[0])
@@ -241,22 +248,22 @@ const AddEditFarmer = ({
                 />
 
                 {/* Middle Name Field */}
-                <FormField
-                  control={form.control}
-                  name='middleName'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Middle Name <span className='text-red-500'>*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder='Enter Middle Name' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
+                {/* <FormField */}
+                {/*   control={form.control} */}
+                {/*   name='middleName' */}
+                {/*   render={({ field }) => ( */}
+                {/*     <FormItem> */}
+                {/*       <FormLabel> */}
+                {/*         Middle Name <span className='text-red-500'>*</span> */}
+                {/*       </FormLabel> */}
+                {/*       <FormControl> */}
+                {/*         <Input placeholder='Enter Middle Name' {...field} /> */}
+                {/*       </FormControl> */}
+                {/*       <FormMessage /> */}
+                {/*     </FormItem> */}
+                {/*   )} */}
+                {/* /> */}
+                {/**/}
                 {/* Last Name Field */}
                 <FormField
                   control={form.control}
@@ -365,7 +372,7 @@ const AddEditFarmer = ({
                       <FormControl>
                         <Input
                           type='date'
-                          placeholder='Enter ID Number'
+                          placeholder='Enter Date of Birth'
                           {...field}
                         />
                       </FormControl>
@@ -460,89 +467,89 @@ const AddEditFarmer = ({
                 />
 
                 {/* Main Crop Select Field */}
-                <FormField
-                  control={form.control}
-                  name='mainCrop'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Main Crop <span className='text-red-500'>*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Select
-                          value={field.value?.toString()}
-                          onValueChange={(value: any) =>
-                            form.setValue('mainCrop', value)
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder='Select Main Crop' />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {loadingCrops ? (
-                              <div>Loading...</div>
-                            ) : crops?.length > 0 ? (
-                              crops.map((crop: any) => (
-                                <SelectItem
-                                  key={crop.id}
-                                  value={crop.id?.toString()}
-                                >
-                                  {crop.name}
-                                </SelectItem>
-                              ))
-                            ) : (
-                              <div>No Crops Found</div>
-                            )}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {/* <FormField */}
+                {/*   control={form.control} */}
+                {/*   name='mainCrop' */}
+                {/*   render={({ field }) => ( */}
+                {/*     <FormItem> */}
+                {/*       <FormLabel> */}
+                {/*         Main Crop <span className='text-red-500'>*</span> */}
+                {/*       </FormLabel> */}
+                {/*       <FormControl> */}
+                {/*         <Select */}
+                {/*           value={field.value?.toString()} */}
+                {/*           onValueChange={(value: any) => */}
+                {/*             form.setValue('mainCrop', value) */}
+                {/*           } */}
+                {/*         > */}
+                {/*           <SelectTrigger> */}
+                {/*             <SelectValue placeholder='Select Main Crop' /> */}
+                {/*           </SelectTrigger> */}
+                {/*           <SelectContent> */}
+                {/*             {loadingCrops ? ( */}
+                {/*               <div>Loading...</div> */}
+                {/*             ) : crops?.length > 0 ? ( */}
+                {/*               crops.map((crop: any) => ( */}
+                {/*                 <SelectItem */}
+                {/*                   key={crop.id} */}
+                {/*                   value={crop.id?.toString()} */}
+                {/*                 > */}
+                {/*                   {crop.name} */}
+                {/*                 </SelectItem> */}
+                {/*               )) */}
+                {/*             ) : ( */}
+                {/*               <div>No Crops Found</div> */}
+                {/*             )} */}
+                {/*           </SelectContent> */}
+                {/*         </Select> */}
+                {/*       </FormControl> */}
+                {/*       <FormMessage /> */}
+                {/*     </FormItem> */}
+                {/*   )} */}
+                {/* /> */}
 
                 {/* Secondary Crop Select Field */}
-                <FormField
-                  control={form.control}
-                  name='secondaryCrop'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Secondary Crop <span className='text-red-500'>*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Select
-                          value={field.value?.toString()}
-                          onValueChange={(value: any) =>
-                            form.setValue('secondaryCrop', value)
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder='Select Secondary Crop' />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {loadingCrops ? (
-                              <div>Loading...</div>
-                            ) : crops?.length > 0 ? (
-                              crops.map((crop: any) => (
-                                <SelectItem
-                                  key={crop.id}
-                                  value={crop.id?.toString()}
-                                >
-                                  {crop.name}
-                                </SelectItem>
-                              ))
-                            ) : (
-                              <div>No Crops Found</div>
-                            )}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
+                {/* <FormField */}
+                {/*   control={form.control} */}
+                {/*   name='secondaryCrop' */}
+                {/*   render={({ field }) => ( */}
+                {/*     <FormItem> */}
+                {/*       <FormLabel> */}
+                {/*         Secondary Crop <span className='text-red-500'>*</span> */}
+                {/*       </FormLabel> */}
+                {/*       <FormControl> */}
+                {/*         <Select */}
+                {/*           value={field.value?.toString()} */}
+                {/*           onValueChange={(value: any) => */}
+                {/*             form.setValue('secondaryCrop', value) */}
+                {/*           } */}
+                {/*         > */}
+                {/*           <SelectTrigger> */}
+                {/*             <SelectValue placeholder='Select Secondary Crop' /> */}
+                {/*           </SelectTrigger> */}
+                {/*           <SelectContent> */}
+                {/*             {loadingCrops ? ( */}
+                {/*               <div>Loading...</div> */}
+                {/*             ) : crops?.length > 0 ? ( */}
+                {/*               crops.map((crop: any) => ( */}
+                {/*                 <SelectItem */}
+                {/*                   key={crop.id} */}
+                {/*                   value={crop.id?.toString()} */}
+                {/*                 > */}
+                {/*                   {crop.name} */}
+                {/*                 </SelectItem> */}
+                {/*               )) */}
+                {/*             ) : ( */}
+                {/*               <div>No Crops Found</div> */}
+                {/*             )} */}
+                {/*           </SelectContent> */}
+                {/*         </Select> */}
+                {/*       </FormControl> */}
+                {/*       <FormMessage /> */}
+                {/*     </FormItem> */}
+                {/*   )} */}
+                {/* /> */}
+                {/**/}
                 {/* AMCOS Multi-Select Field */}
                 <FormField
                   control={form.control}
@@ -554,10 +561,13 @@ const AddEditFarmer = ({
                       </FormLabel>
                       <FormControl>
                         <MultiSelectReactSelect
-                          options={amcos?.map((amcos: any) => ({
-                            value: amcos.id,
-                            label: amcos.name,
-                          }))}
+                          options={
+                            amcos?.length > 0 ?
+
+                              amcos?.map((amcos: any) => ({
+                                value: amcos.id,
+                                label: amcos.name,
+                              })) : []}
                           value={field.value || []}
                           onChange={(selected) =>
                             form.setValue('amcos', selected)

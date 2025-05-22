@@ -6,6 +6,10 @@ export const POST_REGISTER_USER = `${DataBaseUrl}/auth/register`;
 export const REFRESH_TOKEN = `${DataBaseUrl}/auth/register`;
 export const Dashboard = `${DataBaseUrl}/dashboard-stats`;
 
+//USERS
+
+export const USERS = `${DataBaseUrl}/users/`;
+
 
 //LOCATION
 export const REGIONS = `${DataBaseUrl}/region/`;
@@ -21,12 +25,12 @@ export const MEASUREMENT_UNITS = `${DataBaseUrl}/measurement-unit/`;
 //MCUS
 export const MCUS = `${DataBaseUrl}/mcus/`;
 export const AMCOS = `${DataBaseUrl}/amcos/`;
-export const COLLECTION_CENTEER = `${DataBaseUrl}/collection-centers/`;
+export const COLLECTION_CENTEER = `${DataBaseUrl}/collection-center/`;
 
 //FARMERS && HARVESTS
-export const FARMERS = `${DataBaseUrl}/farmers/`;
+export const FARMERS = `${DataBaseUrl}/farmer/`;
 export const FARMS = `${DataBaseUrl}/farms/`;
-export const FARMERS_HARVERSTS = `${DataBaseUrl}/farmer-harvests/`;
+export const FARMERS_HARVERSTS = `${DataBaseUrl}/harvest/`;
 
 
 //MODULES

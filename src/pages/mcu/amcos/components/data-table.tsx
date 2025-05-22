@@ -136,7 +136,7 @@ export function DataTable<TData, TValue>({
       enableHiding: false,
     },
     {
-      accessorKey: 'mcuName',
+      accessorKey: 'mcu',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Mcu Name' />
       ),
@@ -144,7 +144,7 @@ export function DataTable<TData, TValue>({
         return (
           <div className='flex space-x-2'>
             <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-[31rem]'>
-              {row.getValue('mcuName')}
+              {row.getValue('mcu')}
             </span>
           </div>
         )
@@ -153,7 +153,7 @@ export function DataTable<TData, TValue>({
       enableHiding: false,
     },
     {
-      accessorKey: 'villageName',
+      accessorKey: 'village',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Village Name' />
       ),
@@ -161,7 +161,7 @@ export function DataTable<TData, TValue>({
         return (
           <div className='flex space-x-2'>
             <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-[31rem]'>
-              {row.getValue('villageName')}
+              {row.getValue('village')}
             </span>
           </div>
         )

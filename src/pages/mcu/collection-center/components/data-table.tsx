@@ -50,41 +50,43 @@ export function DataTable<TData, TValue>({
   )
   const [sorting, setSorting] = React.useState<SortingState>([])
 
-   // Modal states for Add/Edit
-   const [showModal, setShowModal] = React.useState(false)
-   const [showDeleteModal, setShowDeleteModal] = React.useState(false)
-   const [mode, setMode] = React.useState<'add' | 'edit'>('add')
-   const [initialData, setInitialData] = React.useState<{ id:number , name: string, type:string,  uom: number,
-    packaging: string } | null>(
-     null
-   )
+  // Modal states for Add/Edit
+  const [showModal, setShowModal] = React.useState(false)
+  const [showDeleteModal, setShowDeleteModal] = React.useState(false)
+  const [mode, setMode] = React.useState<'add' | 'edit'>('add')
+  const [initialData, setInitialData] = React.useState<{
+    id: number, name: string, type: string, uom: number,
+    packaging: string
+  } | null>(
+    null
+  )
 
-    // Handle Add/Edit actions
+  // Handle Add/Edit actions
   const handleAdd = () => {
     setMode('add')
-    setInitialData(null) 
+    setInitialData(null)
     setShowModal(true)
   }
 
-  const handleEdit = (rowData: { name: string, id:number, type:string, uom:number, packaging: string  }) => {
+  const handleEdit = (rowData: { name: string, id: number, type: string, uom: number, packaging: string }) => {
     setMode('edit')
-    setInitialData(rowData) 
+    setInitialData(rowData)
     setShowModal(true)
   }
 
   const handleCancel = () => {
-    setShowModal(false) 
+    setShowModal(false)
     setShowDeleteModal(false);
   }
- 
 
-  const handleDelete = (rowData:  {  name: string, id:number, type:string, uom:number, packaging: string}) => {
-    setInitialData(rowData) 
+
+  const handleDelete = (rowData: { name: string, id: number, type: string, uom: number, packaging: string }) => {
+    setInitialData(rowData)
     setShowDeleteModal(true)
   }
 
 
-   const getColumns = React.useCallback((): ColumnDef<TData>[] => [
+  const getColumns = React.useCallback((): ColumnDef<TData>[] => [
     {
       id: 'select',
       header: ({ table }) => (
@@ -136,7 +138,7 @@ export function DataTable<TData, TValue>({
       enableHiding: false,
     },
     {
-      accessorKey: 'Amcos Name',
+      accessorKey: 'amcos',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Amcos Name' />
       ),
@@ -144,7 +146,7 @@ export function DataTable<TData, TValue>({
         return (
           <div className='flex space-x-2'>
             <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-[31rem]'>
-              {row.getValue('amcosName')}
+              {row.getValue('amcos')}
             </span>
           </div>
         )
@@ -153,7 +155,7 @@ export function DataTable<TData, TValue>({
       enableHiding: false,
     },
     {
-      accessorKey: 'villageName',
+      accessorKey: 'village',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Village Name' />
       ),
@@ -161,14 +163,14 @@ export function DataTable<TData, TValue>({
         return (
           <div className='flex space-x-2'>
             <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-[31rem]'>
-              {row.getValue('villageName')}
+              {row.getValue('village')}
             </span>
           </div>
         )
       },
       enableSorting: true,
       enableHiding: false,
-    },  
+    },
 
     {
       id: 'actions',
@@ -181,7 +183,7 @@ export function DataTable<TData, TValue>({
 
   const table = useReactTable({
     data,
-    columns:getColumns(),
+    columns: getColumns(),
     state: {
       sorting,
       columnVisibility,
@@ -201,10 +203,10 @@ export function DataTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
 
- 
+
   return (
     <div className='space-y-4'>
-      <DataTableToolbar table={table} handleAdd={handleAdd}/>
+      <DataTableToolbar table={table} handleAdd={handleAdd} />
       <div className='rounded-md border'>
         <Table>
           <TableHeader>
@@ -216,9 +218,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   )
                 })}
@@ -231,7 +233,7 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
-                  // onDoubleClick={() => handleEdit(row)}
+                // onDoubleClick={() => handleEdit(row)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -265,7 +267,7 @@ export function DataTable<TData, TValue>({
         />
       )}
       {showDeleteModal && (
-        <DeleteDialog id={initialData?.id} name={initialData?.name} onClose={handleCancel}        
+        <DeleteDialog id={initialData?.id} name={initialData?.name} onClose={handleCancel}
         />
       )}
     </div>

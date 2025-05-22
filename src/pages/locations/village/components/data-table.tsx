@@ -48,100 +48,100 @@ export function DataTable<TData, TValue>({
     []
   )
   const [sorting, setSorting] = React.useState<SortingState>([])
-     // Modal states for Add/Edit
-     const [showModal, setShowModal] = React.useState(false)
-     const [mode, setMode] = React.useState<'add' | 'edit'>('add')
-     const [initialData, setInitialData] = React.useState<{ name: string, id:number, ward:any  } | null>(
-       null
-     )
-  
-      // Handle Add/Edit actions
-    const handleAdd = () => {
-      setMode('add')
-      setInitialData(null) 
-      setShowModal(true)
-    }
-  
-    const handleEdit = (rowData: { name: string, id:number, ward:any }) => {
-      setMode('edit')
-      setInitialData(rowData) 
-      setShowModal(true)
-    }
-  
-    const handleCancel = () => {
-      setShowModal(false) 
-    }
+  // Modal states for Add/Edit
+  const [showModal, setShowModal] = React.useState(false)
+  const [mode, setMode] = React.useState<'add' | 'edit'>('add')
+  const [initialData, setInitialData] = React.useState<{ name: string, id: number, ward: any } | null>(
+    null
+  )
 
-    const getColumns = React.useCallback((): ColumnDef<TData>[] => [
-      {
-        id: 'select',
-        header: ({ table }) => (
-          <Checkbox
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && 'indeterminate') as CheckedState
-            }
-            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-            aria-label='Select all'
-            className='translate-y-[2px]'
-          />
-        ),
-        cell: ({ row }) => (
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label='Select row'
-            className='translate-y-[2px]'
-          />
-        ),
-        enableSorting: false,
-        enableHiding: false,
+  // Handle Add/Edit actions
+  const handleAdd = () => {
+    setMode('add')
+    setInitialData(null)
+    setShowModal(true)
+  }
+
+  const handleEdit = (rowData: { name: string, id: number, ward: any }) => {
+    setMode('edit')
+    setInitialData(rowData)
+    setShowModal(true)
+  }
+
+  const handleCancel = () => {
+    setShowModal(false)
+  }
+
+  const getColumns = React.useCallback((): ColumnDef<TData>[] => [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate') as CheckedState
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label='Select all'
+          className='translate-y-[2px]'
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label='Select row'
+          className='translate-y-[2px]'
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: 'name',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Village' />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className='flex space-x-2'>
+            <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-[31rem]'>
+              {row.getValue('name')}
+            </span>
+          </div>
+        )
       },
-      {
-        accessorKey: 'name',
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title='Village' />
-        ),
-        cell: ({ row }) => {
-          return (
-            <div className='flex space-x-2'>
-              <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-[31rem]'>
-                {row.getValue('name')}
-              </span>
-            </div>
-          )
-        },
-        enableSorting: true,
-        enableHiding: false,
+      enableSorting: true,
+      enableHiding: false,
+    },
+    {
+      accessorKey: 'wardName',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Ward' />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className='flex space-x-2'>
+            <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-[31rem]'>
+              {row.getValue('wardName')}
+            </span>
+          </div>
+        )
       },
-      {
-        accessorKey: 'wardName',
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title='Ward' />
-        ),
-        cell: ({ row }) => {
-          return (
-            <div className='flex space-x-2'>
-              <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-[31rem]'>
-                {row.getValue('wardName')}
-              </span>
-            </div>
-          )
-        },
-        enableSorting: true,
-        enableHiding: true,
-      },
-      {
-        id: 'actions',
-        cell: ({ row }) => (
-          <DataTableRowActions row={row} onEdit={handleEdit} onDelete={handleEdit} />
-        ),
-      },
-    ], [handleEdit])
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      id: 'actions',
+      cell: ({ row }) => (
+        <DataTableRowActions row={row} onEdit={handleEdit} onDelete={handleEdit} />
+      ),
+    },
+  ], [handleEdit])
 
   const table = useReactTable({
     data,
-    columns:getColumns(),
+    columns: getColumns(),
     state: {
       sorting,
       columnVisibility,
@@ -163,7 +163,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className='space-y-4'>
-      <DataTableToolbar table={table} handleAdd={handleAdd}/>
+      <DataTableToolbar table={table} handleAdd={handleAdd} />
       <div className='rounded-md border'>
         <Table>
           <TableHeader>
@@ -175,9 +175,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   )
                 })}

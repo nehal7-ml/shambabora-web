@@ -28,21 +28,21 @@ import {
   updateVillages,
 } from '@/helpers/api-helper'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { addAlert } from '@/store/slices/elert-slice' 
+import { addAlert } from '@/store/slices/elert-slice'
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Please enter Village name' }),
-  region: z.string().min(1, { message: 'Please select region' }).transform(Number),
-  district: z.string().min(1, { message: 'Please select district' }).transform(Number),
-  ward: z.string().min(1, { message: 'Please select ward' }).transform(Number),
+  region: z.string().min(1, { message: 'Please select region' }),
+  district: z.string().min(1, { message: 'Please select district' }),
+  ward: z.string().min(1, { message: 'Please select ward' }),
 })
 
 type FormSchema = z.infer<typeof formSchema>
 
 interface AddEditVillageProps {
   mode: 'add' | 'edit'
-  initialData?: { name: string; id: number;  ward: any } | null
+  initialData?: { name: string; id: number; ward: any } | null
   handleCancel: () => void
 }
 
@@ -65,24 +65,24 @@ const AddEditVillage = ({
   const { data: regions, isLoading: isRegionsLoading, } = useQuery({
     queryKey: ['regions'],
     queryFn: async () => {
-      const response:any = await getRegions();
-      return response;
+      const response: any = await getRegions();
+      return response.data;
     },
   })
 
-  const { data: districts, isLoading: isDistrictsLoading,  } = useQuery({
+  const { data: districts, isLoading: isDistrictsLoading, } = useQuery({
     queryKey: ['districts'],
     queryFn: async () => {
-      const response:any = await getRDistrict();
-      return response;
+      const response: any = await getRDistrict();
+      return response.data;
     },
   })
 
-  const { data: wards, isLoading: isWardsLoading,  } = useQuery({
+  const { data: wards, isLoading: isWardsLoading, } = useQuery({
     queryKey: ['wards'],
     queryFn: async () => {
-      const response:any = await getRWards();
-      return response;
+      const response: any = await getRWards();
+      return response.data;
     },
   })
 
@@ -177,7 +177,7 @@ const AddEditVillage = ({
                       <Select
                         value={field.value?.toLocaleString()}
                         onValueChange={(value: any) => {
-                          const regionId = Number(value)
+                          const regionId = value
                           form.setValue('region', value)
                           setSelectedRegion(regionId)
                           // Reset district and ward when region changes
@@ -224,7 +224,7 @@ const AddEditVillage = ({
                       <Select
                         value={field.value?.toLocaleString()}
                         onValueChange={(value: any) => {
-                          const districtId = Number(value)
+                          const districtId = value
                           form.setValue('district', value)
                           setSelectedDistrict(districtId)
                           // Reset ward when district changes
@@ -238,8 +238,8 @@ const AddEditVillage = ({
                         <SelectContent>
                           {isDistrictsLoading ? (
                             <div>
-                            Loading...
-                          </div>
+                              Loading...
+                            </div>
                           ) : filteredDistricts?.length > 0 ? (
                             filteredDistricts.map((district: any) => (
                               <SelectItem key={district.id} value={district.id.toString()}>
@@ -249,12 +249,12 @@ const AddEditVillage = ({
                           ) : selectedRegion ? (
                             <div>
                               No districts found
-                          </div>
+                            </div>
                           ) : (
                             <div>
-                             Select a region first
-                        </div>
-                           
+                              Select a region first
+                            </div>
+
                           )}
                         </SelectContent>
                       </Select>
@@ -284,9 +284,9 @@ const AddEditVillage = ({
                         </SelectTrigger>
                         <SelectContent>
                           {isWardsLoading ? (
-                               <div>
-                               Loading...
-                             </div>
+                            <div>
+                              Loading...
+                            </div>
                           ) : filteredWards?.length > 0 ? (
                             filteredWards.map((ward: any) => (
                               <SelectItem key={ward.id} value={ward.id.toString()}>
@@ -295,13 +295,13 @@ const AddEditVillage = ({
                             ))
                           ) : selectedDistrict ? (
                             <div>
-                           No wards found
-                          </div>
-                        
+                              No wards found
+                            </div>
+
                           ) : (
                             <div>
-                            Select a district first
-                           </div>
+                              Select a district first
+                            </div>
                           )}
                         </SelectContent>
                       </Select>

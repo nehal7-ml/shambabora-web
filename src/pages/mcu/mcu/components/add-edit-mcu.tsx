@@ -21,12 +21,12 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/custom/button'
 import { getRegions, postMCU, updateMCU } from '@/helpers/api-helper'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { addAlert } from '@/store/slices/elert-slice' 
+import { addAlert } from '@/store/slices/elert-slice'
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Please enter Mcu name' }),
-  region: z.string().min(1, { message: 'Please select region' }).transform(Number),
+  region: z.string().min(1, { message: 'Please select region' })
 })
 
 type FormSchema = z.infer<typeof formSchema>
@@ -54,12 +54,12 @@ const AddEditMcu = ({
   })
 
   console.log(initialData);
-  
-  const { data: regions, isLoading: isRegionsLoading,  } = useQuery({
+
+  const { data: regions, isLoading: isRegionsLoading, } = useQuery({
     queryKey: ['regions'],
     queryFn: async () => {
       const response: any = await getRegions()
-      return response
+      return response.data
     },
   })
 
@@ -136,7 +136,7 @@ const AddEditMcu = ({
                     <FormControl>
                       <Select
                         value={field.value.toLocaleString()}
-                        onValueChange={(value:any) => {
+                        onValueChange={(value: any) => {
                           form.setValue('region', value)
                         }}
                       >
@@ -155,7 +155,7 @@ const AddEditMcu = ({
                               </SelectItem>
                             ))
                           ) : (
-                            <SelectItem disabled value=''>
+                            <SelectItem disabled value='none'>
                               No regions found
                             </SelectItem>
                           )}

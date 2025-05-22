@@ -6,20 +6,21 @@ import { DataTable } from './components/data-table'
 import { columns } from './components/columns'
 // import { regions } from './data/data'
 import { useQuery } from '@tanstack/react-query'
-import {  getFarmers } from '@/helpers/api-helper'
+import { getFarmers } from '@/helpers/api-helper'
+import { snakeToCamelCase } from '@/lib/utils'
 
-export default function Region() {
+export default function Farmer() {
   const { data: farmers, isLoading } = useQuery({
     queryKey: ["farmers"],
     queryFn: async () => {
-      const response:any = await getFarmers();
+      const response: any = await getFarmers();
       console.log(response);
-      return response;
+      return snakeToCamelCase(response);
     },
   });
 
   console.log(farmers);
-  
+
   return (
     <Layout>
       {/* ===== Top Heading ===== */}
@@ -41,9 +42,9 @@ export default function Region() {
           </div>
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-         {
-          isLoading ? <div>Loading .....</div>:  <DataTable data={farmers} columns={columns} />
-         }
+          {
+            isLoading ? <div>Loading .....</div> : <DataTable data={farmers?.data ?? []} columns={columns} />
+          }
         </div>
       </Layout.Body>
     </Layout>

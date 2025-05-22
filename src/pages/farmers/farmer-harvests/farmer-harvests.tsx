@@ -201,7 +201,7 @@ const FarmerDetailsPage = () => {
     queryKey: ['farmer', params?.id],
     queryFn: async () => {
       const response: any = await retrieveFarmer(`${params?.id}`)
-      return response
+      return response.data
     },
   });
 
@@ -228,7 +228,7 @@ const FarmerDetailsPage = () => {
     queryKey: ['farmer-farms', params?.id],
     queryFn: async () => {
       const response: any = await retrieveFarmerFarms(`${params?.id}/farms`)
-      return response
+      return response.data
     },
   })
 
@@ -247,7 +247,7 @@ const FarmerDetailsPage = () => {
     queryFn: async () => {
       const response: any = await getFarmerHarvests(`${params?.id}`)
       const arr = []
-      arr.push(response)
+      arr.push(response.data)
       return arr
     },
   })
