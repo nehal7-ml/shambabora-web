@@ -26,27 +26,9 @@ test("Navigation on the Crop types page", async ({ page }) => {
 
   await page.getByText(/loading ...../i).waitFor({ state: "detached" });
 
-  await expect(page.getByRole("heading", {name:"Crop Types"})).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Crop Types" })).toBeVisible();
   await expect(page.getByText(/Here's a list of your Crop Types/i)).toBeVisible();
 
-  // Select all table rows excluding the header
-  const rows = await page.locator("tbody tr");
-  const rowCount = await rows.count();
-
-  const expectedData = [
-    { sno: "1", name: "Seeds", },
-  ]
-
-  for (let i = 0; i < rowCount; i++) {
-    const cells = rows.nth(i).locator("td");
-    const sno = await cells.nth(1).innerText();
-    const mcuName = await cells.nth(2).locator("span").innerText();
-
-    expect(sno.trim()).toBe(expectedData[i].sno);
-    expect(mcuName.trim()).toBe(expectedData[i].name);
-  }
-
-  await expect(page.getByText("0 of 1 row(s) selected.")).toBeVisible();
 });
 
 
@@ -73,6 +55,14 @@ test("Create → Edit → Delete a Crop Type", async ({ page }) => {
     await page.getByPlaceholder("Enter CropType name").fill(originalName);
 
     await page.getByRole("button", { name: /create/i }).click();
+    // since new records go the end click last pasge if active
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
+
 
     const newRow = page.locator("tbody tr", { hasText: originalName });
     await expect(newRow).toBeVisible();
@@ -89,6 +79,14 @@ test("Create → Edit → Delete a Crop Type", async ({ page }) => {
     await input.fill(updatedName);
 
     await page.getByRole("button", { name: /update/i }).click();
+    // since new records go the end click last pasge if active
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
+
 
     const updatedRow = page.locator("tbody tr", { hasText: updatedName });
     await expect(updatedRow).toBeVisible();

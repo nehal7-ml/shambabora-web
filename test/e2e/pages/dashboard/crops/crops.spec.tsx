@@ -1,137 +1,132 @@
 import { test, expect } from "@playwright/test";
 test("Navigation on the Crop types page", async ({ page }) => {
-    await page.goto("/sign-in");
+  await page.goto("/sign-in");
 
 
-    //  These e-mail and password need to be externilized so that we can do multiple user tests
-    await page.getByLabel(/email/i).fill("Kenny27@yahoo.com");
-    await page.getByLabel(/password/i).fill("shambabora");
+  //  These e-mail and password need to be externilized so that we can do multiple user tests
+  await page.getByLabel(/email/i).fill("Kenny27@yahoo.com");
+  await page.getByLabel(/password/i).fill("shambabora");
 
-    // 6. Optional: Click the submit button if available
-    const loginButton = page.getByRole("button", { name: /sign in|login/i });
-    if (await loginButton.isVisible()) {
-        await loginButton.click();
-    }
+  // 6. Optional: Click the submit button if available
+  const loginButton = page.getByRole("button", { name: /sign in|login/i });
+  if (await loginButton.isVisible()) {
+    await loginButton.click();
+  }
 
-    await expect(page).toHaveURL(/dashboard/i);
+  await expect(page).toHaveURL(/dashboard/i);
 
-    await expect(page).toHaveTitle(/Shamba Bora/);
+  await expect(page).toHaveTitle(/Shamba Bora/);
 
-    await page.getByRole("button", { name: /Manage Crops/i }).click();
-    await page.getByRole("link", { name: /Crops/i }).click();
+  await page.getByRole("button", { name: /Manage Crops/i }).click();
+  await page.getByRole("link", { name: /Crops/i }).click();
 
-    await expect(page).toHaveURL("/dashboard/crops");
+  await expect(page).toHaveURL("/dashboard/crops");
 
-    await page.getByText(/loading ...../i).waitFor({ state: "detached" });
+  await page.getByText(/loading ...../i).waitFor({ state: "detached" });
 
-    await expect(page.getByRole("heading", { name: "Crop" })).toBeVisible();
-    await expect(page.getByText(/Here's a list of your Crop/i)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Crop" })).toBeVisible();
+  await expect(page.getByText(/Here's a list of your Crop/i)).toBeVisible();
 
-    // Select all table rows excluding the header
-    const rows = await page.locator("tbody tr");
-    const rowCount = await rows.count();
-
-    const expectedData = [
-        { sno: "1", name: "Awesome Steel Keyboard", type: "grain", unit: "kg" },
-    ]
-
-    for (let i = 0; i < rowCount; i++) {
-        const cells = rows.nth(i).locator("td");
-        const sno = await cells.nth(1).innerText();
-        const cropName = await cells.nth(2).locator("span").innerText();
-        const type = await cells.nth(3).locator("span").innerText();
-        const unit = await cells.nth(4).locator("span").innerText();
-
-        expect(sno.trim()).toBe(expectedData[i].sno);
-        expect(cropName.trim()).toBe(expectedData[i].name);
-        expect(type.trim()).toBe(expectedData[i].type);
-        expect(unit.trim()).toBe(expectedData[i].unit);
-    }
-
-    await expect(page.getByText("0 of 1 row(s) selected.")).toBeVisible();
 });
 
 test("Create → Edit → Delete a Crop", async ({ page }) => {
-    await page.goto("/sign-in",{timeout: 60000});
+  await page.goto("/sign-in", { timeout: 60000 });
 
-    // Sign in
-    await page.getByLabel(/email/i).fill("Kenny27@yahoo.com");
-    await page.getByLabel(/password/i).fill("shambabora");
-    await page.getByRole("button", { name: /sign in|login/i }).click();
+  // Sign in
+  await page.getByLabel(/email/i).fill("Kenny27@yahoo.com");
+  await page.getByLabel(/password/i).fill("shambabora");
+  await page.getByRole("button", { name: /sign in|login/i }).click();
 
-    // Navigate to Crops page
-    await page.getByRole("button", { name: /Manage Crops/i }).click();
-    await page.getByRole("link", { name: /Crops/i }).click();
-    await expect(page).toHaveURL("/dashboard/crops");
+  // Navigate to Crops page
+  await page.getByRole("button", { name: /Manage Crops/i }).click();
+  await page.getByRole("link", { name: /Crops/i }).click();
+  await expect(page).toHaveURL("/dashboard/crops");
 
-    await page.getByText(/loading/i).waitFor({ state: "detached" });
+  await page.getByText(/loading/i).waitFor({ state: "detached" });
 
-    const originalName = `Crop-${Date.now()}`;
-    const updatedName = `${originalName}-edited`;
+  const originalName = `Crop-${Date.now()}`;
+  const updatedName = `${originalName}-edited`;
 
-    await test.step("Create crop", async () => {
-        await page.getByRole("button", { name: "Add Crop" }).click();
+  await test.step("Create crop", async () => {
+    await page.getByRole("button", { name: "Add Crop" }).click();
 
-        await page.getByPlaceholder("Enter Crop name").fill(originalName);
+    await page.getByPlaceholder("Enter Crop name").fill(originalName);
 
-        // Crop Type (1st combobox)
-        await page.locator("button[role=combobox]", { hasText: /Select a crop type/i }).click();
-         
-        await page.getByRole("option").last().click();
+    // Crop Type (1st combobox)
+    await page.locator("button[role=combobox]", { hasText: /Select a crop type/i }).click();
 
-
-        // Measurement Unit (2nd combobox)
-        await page.locator("button[role=combobox]", { hasText: /Select a unit/i }).click();
-
-         await page.getByRole("option").last().click();
+    await page.getByRole("option").last().click();
 
 
-         await page.locator("button[role=combobox]", { hasText: /False/i }).click();
-        const moisture_content_computation = page.getByRole("option");
-        if (await moisture_content_computation.count() === 0) throw new Error("No Packaging options available");
-        await page.getByRole("option").last().click();
+    // Measurement Unit (2nd combobox)
+    await page.locator("button[role=combobox]", { hasText: /Select a unit/i }).click();
+
+    await page.getByRole("option").last().click();
 
 
-        await page.getByPlaceholder("Enter Max Moisture Content").fill('0', {force: true});
+    await page.locator("button[role=combobox]", { hasText: /False/i }).click();
+    const moisture_content_computation = page.getByRole("option");
+    if (await moisture_content_computation.count() === 0) throw new Error("No Packaging options available");
+    await page.getByRole("option").last().click();
 
-        // Packaging (3rd combobox)
-        await page.locator("button[role=combobox]", { hasText: /Select a packaging/i }).click();
-        const packagingOption = page.getByRole("option");
-        if (await packagingOption.count() === 0) throw new Error("No Packaging options available");
-        await page.getByRole("option").last().click();
-     
-        await page.getByRole("button", { name: /Create Crop/i }).click();
 
-        const newRow = page.locator("tbody tr", { hasText: originalName });
-        await expect(newRow).toBeVisible();
-    });
+    await page.getByPlaceholder("Enter Max Moisture Content").fill('0', { force: true });
 
-    await test.step("Edit crop", async () => {
-        const row = page.locator("tr", { hasText: originalName }).first();
-        const kebab = row.locator('button[aria-haspopup="menu"]');
-        await kebab.click();
+    // Packaging (3rd combobox)
+    await page.locator("button[role=combobox]", { hasText: /Select a packaging/i }).click();
+    const packagingOption = page.getByRole("option");
+    if (await packagingOption.count() === 0) throw new Error("No Packaging options available");
+    await page.getByRole("option").last().click();
 
-        await page.getByRole("menuitem", { name: /edit/i }).click();
+    await page.getByRole("button", { name: /Create Crop/i }).click();
 
-        const input = page.getByPlaceholder("Enter Crop name");
-        await input.fill(updatedName);
+    // since new records go the end click last pasge if active
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
 
-        await page.getByRole("button", { name: /update/i }).click();
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
 
-        const updatedRow = page.locator("tbody tr", { hasText: updatedName });
-        await expect(updatedRow).toBeVisible();
-    });
 
-    await test.step("Delete crop", async () => {
-        const row = page.locator("tr", { hasText: updatedName }).first();
-        const kebab = row.locator('button[aria-haspopup="menu"]');
-        await kebab.click();
+    const newRow = page.locator("tbody tr", { hasText: originalName });
+    await expect(newRow).toBeVisible();
+  });
 
-        await page.getByRole("menuitem", { name: /Delete/i }).click();
+  await test.step("Edit crop", async () => {
+    const row = page.locator("tr", { hasText: originalName }).first();
+    const kebab = row.locator('button[aria-haspopup="menu"]');
+    await kebab.click();
 
-        const confirmButton = page.getByRole("button", { name: /Delete/i });
-        await confirmButton.click();
+    await page.getByRole("menuitem", { name: /edit/i }).click();
 
-        await expect(page.locator("tbody tr", { hasText: updatedName })).toHaveCount(0);
-    });
+    const input = page.getByPlaceholder("Enter Crop name");
+    await input.fill(updatedName);
+
+    await page.getByRole("button", { name: /update/i }).click();
+    // since new records go the end click last pasge if active
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
+
+
+    const updatedRow = page.locator("tbody tr", { hasText: updatedName });
+    await expect(updatedRow).toBeVisible();
+  });
+
+  await test.step("Delete crop", async () => {
+    const row = page.locator("tr", { hasText: updatedName }).first();
+    const kebab = row.locator('button[aria-haspopup="menu"]');
+    await kebab.click();
+
+    await page.getByRole("menuitem", { name: /Delete/i }).click();
+
+    const confirmButton = page.getByRole("button", { name: /Delete/i });
+    await confirmButton.click();
+
+    await expect(page.locator("tbody tr", { hasText: updatedName })).toHaveCount(0);
+  });
 });

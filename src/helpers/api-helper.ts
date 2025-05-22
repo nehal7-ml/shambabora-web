@@ -77,17 +77,17 @@ export const updateVillages = (id: number, data: any) => api.update(url.VILLAGES
 export const postLocationCropTypes = (data: any) => api.create(url.CROP_TYEPS, data);
 export const getCropTypes = () => api.get(url.CROP_TYEPS);
 export const deleteCropTypes = (id: number, data: any) => api.delete(url.CROP_TYEPS + id, data);
-export const updateCropTypes = (id: number, data: any) => api.put(url.CROP_TYEPS + id, data);
+export const updateCropTypes = (id: number, data: any) => api.patch(url.CROP_TYEPS + id, data);
 
 export const postCrops = (data: any) => api.create(url.CROPS, data);
 export const getCrops = () => api.get(url.CROPS);
 export const deleteCrops = (id: number, data: any) => api.delete(url.CROPS + id, data);
-export const updateCrops = (id: number, data: any) => api.put(url.CROPS + id, data);
+export const updateCrops = (id: number, data: any) => api.patch(url.CROPS + id, data);
 
 export const postMeasurementUnit = (data: any) => api.create(url.MEASUREMENT_UNITS, data);
 export const getMeasurementUnit = () => api.get(url.MEASUREMENT_UNITS);
 export const deleteMeasurementUnit = (id: number, data: any) => api.delete(url.MEASUREMENT_UNITS + id, data);
-export const updateMeasurementUnit = (id: number, data: any) => api.put(url.MEASUREMENT_UNITS + id, data);
+export const updateMeasurementUnit = (id: number, data: any) => api.patch(url.MEASUREMENT_UNITS + id, data);
 
 
 //MCUS

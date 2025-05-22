@@ -38,6 +38,16 @@ test("Create → Edit → Delete a Farmer", async ({ page }) => {
     await page.getByRole("option", { name: 'Primary', exact: true }).click();
 
     await page.getByRole("button", { name: /Create Farmer/i }).click();
+
+    // since new records go the end click last pasge if active
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
+
+
     await expect(page.getByText(originalFirstName)).toBeVisible();
   });
 
@@ -52,6 +62,14 @@ test("Create → Edit → Delete a Farmer", async ({ page }) => {
     await firstNameInput.fill(updatedFirstName);
 
     await page.getByRole("button", { name: /Update Farmer/i }).click();
+    // since new records go the end click last pasge if active
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
+
 
     await expect(page.getByText(updatedFirstName)).toBeVisible();
   });

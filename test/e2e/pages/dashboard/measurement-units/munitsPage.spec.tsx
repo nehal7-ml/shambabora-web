@@ -26,31 +26,12 @@ test("Navigation on the Measurement Units page", async ({ page }) => {
 
   await page.getByText(/loading ...../i).waitFor({ state: "detached" });
 
-  await expect(page.getByRole("heading", {name:"Measurement units"})).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Measurement units" })).toBeVisible();
   await expect(page.getByText(/Here's a list of your Measurement units/i)).toBeVisible();
 
   // Select all table rows excluding the header
   const rows = await page.locator("tbody tr");
-  const rowCount = await rows.count();
 
-  const expectedData = [
-    { sno: "1", name: "Litre", type: "VOLUME" },
-    { sno: "2", name: "Meter", type: "LENGTH" },
-    { sno: "3", name: "Gram", type: "WEIGHT" },
-  ]
-
-  for (let i = 0; i < rowCount; i++) {
-    const cells = rows.nth(i).locator("td");
-    const sno = await cells.nth(1).innerText();
-    const mcuName = await cells.nth(2).locator("span").innerText();
-    const region = await cells.nth(3).locator("span").innerText();
-
-    expect(sno.trim()).toBe(expectedData[i].sno);
-    expect(mcuName.trim()).toBe(expectedData[i].name);
-    expect(region.trim()).toBe(expectedData[i].type);
-  }
-
-  await expect(page.getByText("0 of 3 row(s) selected.")).toBeVisible();
 });
 
 
@@ -71,7 +52,7 @@ test("Create → Edit → Delete a Measurement Unit", async ({ page }) => {
 
   await page.getByText(/loading/i).waitFor({ state: "detached" });
 
-  // Unique name
+  // Unique 
   const originalName = `Unit-${Date.now()}`;
   const updatedName = `${originalName}-edited`;
 

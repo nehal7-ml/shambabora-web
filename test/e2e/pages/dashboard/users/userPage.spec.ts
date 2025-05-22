@@ -21,8 +21,7 @@ test.describe("Test Users Page ", () => {
 
 
     await expect(page).toHaveURL(/dashboard/i);
-    await page.getByRole("button", { name: /Manage Users/i }).click();
-    await page.getByRole("link", { name: /Users/i }).click();
+    await page.getByRole("link", { name: /Manage Users/i }).click();
     await expect(page).toHaveURL(/\/dashboard\/users/i);
     await page.getByText(/loading/i).waitFor({ state: "detached" });
   });
@@ -40,11 +39,17 @@ test.describe("Test Users Page ", () => {
       await page.getByPlaceholder("Enter Last Name").fill(lastName);
       await page.getByPlaceholder("Enter Phone Number").fill(phone);
 
-      // Select Role
-      await page.locator("button[role='combobox']", { hasText: /select role/i }).click();
-      await page.getByRole("option", { name: role }).click();
 
-      await page.getByRole("button", { name: /create user/i }).click();
+      await page.getByRole("button", { name: /Create Farmer/i }).click();
+
+
+      const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+      // Check if the button is enabled before clicking
+      if (!(await lastPageButton.isDisabled())) {
+        await lastPageButton.click();
+      }
+
       await expect(page.getByText(email)).toBeVisible();
     });
 
@@ -55,7 +60,7 @@ test.describe("Test Users Page ", () => {
 
       await page.getByPlaceholder("Enter First Name").fill(updatedName);
       await page.getByPlaceholder("Enter Phone Number").fill(updatedPhone);
-      await page.getByRole("button", { name: /update/i }).click();
+      await page.getByRole("button", { name: /Udpate Farmer/i }).click();
 
       await expect(page.locator("tr", { hasText: updatedName })).toBeVisible();
     });

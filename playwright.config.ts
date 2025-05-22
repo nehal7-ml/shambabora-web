@@ -10,7 +10,7 @@ export default defineConfig({
   retries: 1, // Retry failed tests once
   reporter: "html",
   use: {
-    baseURL: "http://localhost:5173", // test with the preview server 
+    baseURL: "http://localhost:4173", // test with the preview server 
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
