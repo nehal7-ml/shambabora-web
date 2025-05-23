@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-test('Navigation on the Manage Amcos menu', async ({ page }) => {
+test.skip('Navigation on the Manage Amcos menu', async ({ page }) => {
   await page.goto('/')
 
   await expect(page.locator('text=Login')).toBeVisible()

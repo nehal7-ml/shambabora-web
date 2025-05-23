@@ -105,13 +105,14 @@ test("Create → Edit → Delete a Crop", async ({ page }) => {
     await input.fill(updatedName);
 
     await page.getByRole("button", { name: /update/i }).click();
+    await sleep(2000);
+
     // since new records go the end click last pasge if active
     const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
     // Check if the button is enabled before clicking
     if (!(await lastPageButton.isDisabled())) {
       await lastPageButton.click();
     }
-    await sleep(2000);
 
     const updatedRow = page.locator("tbody tr", { hasText: updatedName });
     await expect(updatedRow).toBeVisible();
