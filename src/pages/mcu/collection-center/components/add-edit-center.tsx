@@ -59,8 +59,8 @@ const AddEditCollectionCenter = ({ mode, initialData, handleCancel }: AddEditCol
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: initialData?.name || '',
-      amcos: initialData?.amcos,
-      village: initialData?.village,
+      amcos: initialData?.amcos.id ?? '',
+      village: initialData?.village.id ?? '',
 
     },
   })

@@ -30,6 +30,7 @@ import { DataTableColumnHeader } from './data-table-column-header'
 import { Checkbox } from '@radix-ui/react-checkbox'
 import { DataTableRowActions } from './data-table-row-actions'
 import DeleteDialog from './delete-record'
+import { DataSchema } from '../data/schema'
 //@ts-ignore
 interface DataTableProps<TData, TValue> {
   columns: any
@@ -86,7 +87,7 @@ export function DataTable<TData, TValue>({
   }
 
 
-  const getColumns = React.useCallback((): ColumnDef<TData>[] => [
+  const getColumns = React.useCallback((): ColumnDef<DataSchema>[] => [
     {
       id: 'select',
       header: ({ table }) => (
@@ -138,6 +139,7 @@ export function DataTable<TData, TValue>({
       enableHiding: false,
     },
     {
+      accessorFn: (row) => row.amcos.name,
       accessorKey: 'amcos',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Amcos Name' />
@@ -155,6 +157,7 @@ export function DataTable<TData, TValue>({
       enableHiding: false,
     },
     {
+      accessorFn: (row) => row.village.name,
       accessorKey: 'village',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Village Name' />
