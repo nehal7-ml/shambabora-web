@@ -1,6 +1,11 @@
 import { z } from 'zod'
 
 
+const relatedData = z.object({
+  id: z.string(),
+  name: z.string(),
+})
+
 export const schema = z.object({
   id: z.string(),
 
@@ -29,7 +34,7 @@ export const schema = z.object({
   mainCrop: z.number().nullable().optional(),
   secondaryCrop: z.number().nullable().optional(),
 
-  amcos: z.any(),
+  amcos: relatedData.nullable(),
 });
 
 

@@ -6,20 +6,40 @@ import { DataTable } from './components/data-table'
 import { columns } from './components/columns'
 // import { regions } from './data/data'
 import { useQuery } from '@tanstack/react-query'
-import { getFarmers } from '@/helpers/api-helper'
-import { snakeToCamelCase } from '@/lib/utils'
+import { getAMCOSs, getFarmers } from '@/helpers/api-helper'
+import { connectArrays, snakeToCamelCase } from '@/lib/utils'
+import { useMemo } from 'react'
+import { DataSchema } from './data/schema'
 
 export default function Farmer() {
   const { data: farmers, isLoading } = useQuery({
     queryKey: ["farmers"],
     queryFn: async () => {
       const response: any = await getFarmers();
-      console.log(response);
-      return snakeToCamelCase(response);
+      return snakeToCamelCase(response.data);
     },
   });
+  const { data: amcos, isLoading: amcosLoading } = useQuery({
+    queryKey: ["amcos"],
+    queryFn: async () => {
+      const response: any = await getAMCOSs();
+      return response.data;
+    }
+  }
+  )
 
-  console.log(farmers);
+
+  const farmerData = useMemo<DataSchema[]>(() => {
+    if (isLoading || amcosLoading) return
+    const data = connectArrays<DataSchema>(farmers, {
+      amcos: amcos,
+    }, [
+      { mainKey: 'amcos', sourceArrayName: 'amcos', linkedKey: 'id', newPropertyName: 'amcos' }
+    ])
+
+    return data
+  }, [farmers, amcos, isLoading, amcosLoading])
+    console.log("farmerData", farmerData, amcos);
 
   return (
     <Layout>
@@ -43,7 +63,7 @@ export default function Farmer() {
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
           {
-            isLoading ? <div>Loading .....</div> : <DataTable data={farmers?.data ?? []} columns={columns} />
+            isLoading ? <div>Loading .....</div> : <DataTable data={farmerData ?? []} columns={columns} />
           }
         </div>
       </Layout.Body>

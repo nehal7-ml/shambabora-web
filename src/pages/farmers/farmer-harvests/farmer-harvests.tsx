@@ -31,6 +31,7 @@ import { Input } from '@/components/ui/input'
 import { addAlert } from '@/store/slices/elert-slice'
 import { useAppDispatch } from '@/hooks/store-hooks'
 import 'leaflet/dist/leaflet.css'
+import { snakeToCamelCase } from '@/lib/utils'
 // Fix for default marker icons in Leaflet
 // @ts-ignore
 delete L.Icon.Default.prototype._getIconUrl
@@ -196,12 +197,12 @@ const FarmerDetailsPage = () => {
     setFormData({ ...formData, coordinates: newCoordinates })
   }
 
-  // Fetch AMCOS
-  const { data: farmesrData, isLoading: loadingFarmer } = useQuery({
+  // Fetch <Farmner></Farmner>
+  const { data: farmerData, isLoading: loadingFarmer } = useQuery({
     queryKey: ['farmer', params?.id],
     queryFn: async () => {
       const response: any = await retrieveFarmer(`${params?.id}`)
-      return response.data
+      return snakeToCamelCase(response);
     },
   });
 
@@ -210,22 +211,22 @@ const FarmerDetailsPage = () => {
     queryFn: async () => {
       const response: any = await getCrops()
       const main = response?.find(
-        (crop: any) => crop.id === farmesrData?.mainCrop
+        (crop: any) => crop.id === farmerData?.mainCrop
       )
       const secondary = response?.find(
-        (crop: any) => crop.id === farmesrData?.secondaryCrop
+        (crop: any) => crop.id === farmerData?.secondaryCrop
       )
       return main?.name + ',' + secondary?.name;
     },
   });
+  console.log(farmerData)
 
-  console.log(crops);
-  
 
 
   // Fetch AMCOS
   const { data: farmesrFarms, isLoading: loadingFarmerFarms } = useQuery({
     queryKey: ['farmer-farms', params?.id],
+    retry: false,
     queryFn: async () => {
       const response: any = await retrieveFarmerFarms(`${params?.id}/farms`)
       return response.data
@@ -237,18 +238,27 @@ const FarmerDetailsPage = () => {
     const dta = {
       ...formData,
       farmer: params?.id,
-      amcos: farmesrData?.amcos,
+      amcos: farmerData?.amcos,
     }
     await mutation.mutateAsync(dta)
   }
 
+  // currently this path doesn't exist
   const { data: farmerHarvest, isLoading: loadingFarmerHarvest } = useQuery({
     queryKey: ['farmer-harvests', params?.id],
+    retry: false,
     queryFn: async () => {
-      const response: any = await getFarmerHarvests(`${params?.id}`)
-      const arr = []
-      arr.push(response.data)
-      return arr
+      try {
+        const response: any = await getFarmerHarvests(`${params?.id}`)
+        const arr = []
+        arr.push(response.data)
+        return arr
+      }
+
+      catch (error) {
+        console.error("failed to fetch farmer ahrvest ", error)
+        return []
+      }
     },
   })
 
@@ -261,7 +271,7 @@ const FarmerDetailsPage = () => {
     setIsMapOpen(true)
   }
 
- 
+
 
   const calculateTotalArea = () => {
     if (!farmesrFarms) return 0
@@ -294,15 +304,15 @@ const FarmerDetailsPage = () => {
                 {/* Profile Picture */}
                 <div className='flex-shrink-0'>
                   <div className='flex h-32 w-32 items-center justify-center overflow-hidden rounded-full bg-secondary/20'>
-                    {!farmesrData?.image ? (
+                    {!farmerData?.image ? (
                       <div className='flex h-full w-full items-center justify-center bg-primary text-3xl font-bold text-white'>
-                        {farmesrData?.firstName[0]}
-                        {farmesrData?.lastName[0]}
+                        {farmerData?.firstName[0]}
+                        {farmerData?.lastName[0]}
                       </div>
                     ) : (
                       <img
-                        src={farmesrData?.image}
-                        alt={farmesrData?.name}
+                        src={farmerData?.image}
+                        alt={farmerData?.name}
                         className='h-full w-full object-cover'
                       />
                     )}
@@ -314,21 +324,21 @@ const FarmerDetailsPage = () => {
                   <div className='mb-4 flex flex-col justify-between md:flex-row'>
                     <div>
                       <h1 className='mb-2 text-3xl font-bold'>
-                        {farmesrData?.firstName} {farmesrData?.lastName}
+                        {farmerData?.firstName} {farmerData?.lastName}
                       </h1>
                       <div className='mb-2 flex items-center gap-2'>
                         <Badge variant='outline' className='text-sm'>
-                          ID: {farmesrData?.idNumber}
+                          ID: {farmerData?.idNumber}
                         </Badge>
 
                         <Badge
                           variant={
-                            farmesrData?.status === 'Active'
+                            farmerData?.status === 'Active'
                               ? 'default'
                               : 'secondary'
                           }
                         >
-                          {farmesrData?.status}
+                          {farmerData?.status}
                         </Badge>
                       </div>
                     </div>
@@ -399,25 +409,25 @@ const FarmerDetailsPage = () => {
                   <CardTitle>Personal Information</CardTitle>
                 </CardHeader>
                 <CardContent>
-  <table className='w-full text-sm border border-muted rounded-md overflow-hidden'>
-    <tbody>
-      <TableRow label='Contact Number' value={farmesrData?.phoneNumber} />
-      <TableRow label='TUME Number' value={farmesrData?.tumeNumber || 'N/A'} />
-      <TableRow label='TIN Number' value={farmesrData?.tinNumber || 'N/A'} />
-      <TableRow label='Main Crop' value={crops?.split(',')[0] || 'N/A'} />
-      <TableRow label='Education Level' value={farmesrData?.educationLevel || 'N/A'} />
-      <TableRow label='Date of Birth' value={new Date(farmesrData?.dob).toLocaleDateString()} />
-      <TableRow label='TTB Number' value={farmesrData?.ttbNumber || 'N/A'} />
-      <TableRow label='Secondary Crop' value={crops?.split(',')[1] || 'N/A'} />
-      <TableRow label='Gender' value={farmesrData?.sex} />
-      <TableRow label='Registration Date' value={new Date(farmesrData?.createdAt).toLocaleDateString()} />
-      <TableRow label='ID Type' value={farmesrData?.idType} />
-      <TableRow label='Voter ID' value={farmesrData?.voterId || 'N/A'} />
-      <TableRow label='Drivers License' value={farmesrData?.driversLicense || 'N/A'} />
-      <TableRow label='Fingerprint Captured' value={farmesrData?.fingerprintCaptured ? 'Yes' : 'No'} />
-    </tbody>
-  </table>
-</CardContent>
+                  <table className='w-full text-sm border border-muted rounded-md overflow-hidden'>
+                    <tbody>
+                      <TableRow label='Contact Number' value={farmerData?.phoneNumber} />
+                      <TableRow label='TUME Number' value={farmerData?.tumeNumber || 'N/A'} />
+                      <TableRow label='TIN Number' value={farmerData?.tinNumber || 'N/A'} />
+                      <TableRow label='Main Crop' value={crops?.split(',')[0] || 'N/A'} />
+                      <TableRow label='Education Level' value={farmerData?.educationLevel || 'N/A'} />
+                      <TableRow label='Date of Birth' value={new Date(farmerData?.dob).toLocaleDateString()} />
+                      <TableRow label='TTB Number' value={farmerData?.ttbNumber || 'N/A'} />
+                      <TableRow label='Secondary Crop' value={crops?.split(',')[1] || 'N/A'} />
+                      <TableRow label='Gender' value={farmerData?.sex} />
+                      <TableRow label='Registration Date' value={new Date(farmerData?.createdAt).toLocaleDateString()} />
+                      <TableRow label='ID Type' value={farmerData?.idType} />
+                      <TableRow label='Voter ID' value={farmerData?.voterId || 'N/A'} />
+                      <TableRow label='Drivers License' value={farmerData?.driversLicense || 'N/A'} />
+                      <TableRow label='Fingerprint Captured' value={farmerData?.fingerprintCaptured ? 'Yes' : 'No'} />
+                    </tbody>
+                  </table>
+                </CardContent>
 
 
               </Card>

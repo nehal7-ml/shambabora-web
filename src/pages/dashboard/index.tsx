@@ -19,17 +19,18 @@ import { IconBuilding, IconPlant2, IconScale, IconTractor } from '@tabler/icons-
 import useToken from '@/hooks/use-token'
 import { useQuery } from '@tanstack/react-query'
 import { getAllFarmersHarvests, getCollectionCenters, getCrops, getFarmers } from '@/helpers/api-helper'
+import { snakeToCamelCase } from "@/lib/utils"
 
 export default function Dashboard() {
   // const navigate = useNavigate();
 
   const [token, setToken] = useToken('jwtToken', null);
   const { data: farmers, isLoading } = useQuery({
-    queryKey: ["farmers"],
+    queryKey: ["farmers-dash"],
     queryFn: async () => {
       const response:any = await getFarmers();
       console.log(response);
-      return response.data;
+      return snakeToCamelCase(response.data);
     },
   });
 
@@ -39,7 +40,7 @@ export default function Dashboard() {
       const response:any = await getAllFarmersHarvests();
 
       // console.log(response);
-      return response;
+      return snakeToCamelCase(response.data);
     },
   });
 
@@ -48,20 +49,20 @@ export default function Dashboard() {
   }
 
   const { data: collectionCenters } = useQuery({
-    queryKey: ["collectionCenters"],
+    queryKey: ["collectionCenters-dash"],
     queryFn: async () => {
       const response:any = await getCollectionCenters();
       console.log(response);
-      return response;
+      return response.data;
     },
   });
 
   const { data: crops } = useQuery({
-    queryKey: ["crops"],
+    queryKey: ["crops-dash"],
     queryFn: async () => {
       const response:any = await getCrops();
       console.log(response);
-      return response;
+      return snakeToCamelCase(response.data);
     },
   });
 

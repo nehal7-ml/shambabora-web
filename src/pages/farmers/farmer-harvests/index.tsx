@@ -16,7 +16,7 @@ export default function Harvests() {
     queryKey: ["farmer-harvests"],
     queryFn: async () => {
       const response: any = await getAllFarmersHarvests();
-      return snakeToCamelCase(response);
+      return snakeToCamelCase(response.data);
     },
   });
 
@@ -24,7 +24,7 @@ export default function Harvests() {
     queryKey: ["user-farmers"],
     queryFn: async () => {
       const response = await getUsersWithRole("farmer");
-      return response.data;
+      return snakeToCamelCase(response.data);
     }
   })
   const { data: admins, isLoading: isAdminsLoading } = useQuery({
@@ -70,7 +70,7 @@ export default function Harvests() {
 
   const harvestData = useMemo<DataSchema[]>(() => {
     if (isLoading || isAdminsLoading || isUnionAdminsLoading || isCropsLoading || isAmcosLoading || isCollectionCentersLoading) return
-    const data = connectArrays(harvests?.data,
+    const data = connectArrays(harvests,
       {
         amcos: amcos,
         collectionCenter: collectionCenters,

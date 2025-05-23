@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { schema } from '../data/schema'
+import { useMemo } from "react"
 
 
 interface DataTableRowActionsProps<TData> {
@@ -25,8 +26,9 @@ export function DataTableRowActions<TData>({
   onEdit,
   onView
 }: DataTableRowActionsProps<TData>) {
-  const item = schema.parse(row.original);
+console.log("item", row.original);
 
+  const item = useMemo(()=>schema.parse(row.original), [row.original]);
 
   return (
     <DropdownMenu>
@@ -40,8 +42,8 @@ export function DataTableRowActions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-[160px]'>
-        <DropdownMenuItem  onClick={() => onView(item)}>View Harvests</DropdownMenuItem>
-        <DropdownMenuItem  onClick={() => onEdit(item)}>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onView(item)}>View</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onEdit(item)}>Edit</DropdownMenuItem>
         <DropdownMenuItem onClick={() => onDelete(item)}>
           Delete
           <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
