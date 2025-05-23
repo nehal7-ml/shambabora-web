@@ -48,7 +48,7 @@ import { DataSchema } from "../data/schema"
 interface AddEditAmcosProps {
   mode: 'add' | 'edit'
   //@ts-ignore
-  initialData?: DataSchema| null
+  initialData?: DataSchema | null
   handleCancel: () => void
 }
 
@@ -101,11 +101,11 @@ const AddEditAmcos = ({
       memberCategory: initialData?.memberCategory || '',
       registrationNumber: initialData?.registrationNumber || '',
       tinNumber: initialData?.tinNumber || '',
-      mcu: initialData?.mcu ? initialData.mcu.toString() : '',
-      region: initialData?.region ? initialData.region.toString() : '',
-      district: initialData?.district ? initialData.district.toString() : '',
-      ward: initialData?.ward ? initialData.ward.toString() : '',
-      village: initialData?.village ? initialData.village.toString() : '',
+      mcu: initialData?.mcu ? initialData.mcu.id.toString() : '',
+      region: initialData?.region ? initialData.region.id.toString() : '',
+      district: initialData?.district ? initialData.district.id.toString() : '',
+      ward: initialData?.ward ? initialData.ward.id.toString() : '',
+      village: initialData?.village ? initialData.village.id.toString() : '',
       address: initialData?.address || '',
       phoneNumber: initialData?.phoneNumber || '',
       email: initialData?.email || '',
@@ -139,7 +139,7 @@ const AddEditAmcos = ({
 
   // Fetch Wards
   const {
-    data: wards,    
+    data: wards,
     isLoading: loadingWards,
   } = useQuery({
     queryKey: ['wards'],
@@ -159,7 +159,7 @@ const AddEditAmcos = ({
       const response: any = await getRDistrict()
       return response.data
     },
-  }) 
+  })
 
   // Fetch Regions
   const {
@@ -337,7 +337,7 @@ const AddEditAmcos = ({
                           <SelectValue placeholder="Select Region" />
                         </SelectTrigger>
                         <SelectContent>
-                          {regions?.map((item:any) => (
+                          {regions?.map((item: any) => (
                             <SelectItem key={item.id} value={item.id.toString()}>
                               {item.name}
                             </SelectItem>
@@ -363,7 +363,7 @@ const AddEditAmcos = ({
                           <SelectValue placeholder="Select District" />
                         </SelectTrigger>
                         <SelectContent>
-                          {districts?.map((item:any) => (
+                          {districts?.map((item: any) => (
                             <SelectItem key={item.id} value={item.id.toString()}>
                               {item.name}
                             </SelectItem>
@@ -389,7 +389,7 @@ const AddEditAmcos = ({
                           <SelectValue placeholder="Select Ward" />
                         </SelectTrigger>
                         <SelectContent>
-                          {wards?.map((item:any) => (
+                          {wards?.map((item: any) => (
                             <SelectItem key={item.id} value={item.id.toString()}>
                               {item.name}
                             </SelectItem>
