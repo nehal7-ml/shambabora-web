@@ -50,7 +50,7 @@ export default function Region() {
     }
   })
   const { data: mcus, isLoading: mcuLoading } = useQuery({
-    queryKey: ["mcus"],
+    queryKey: ["mcus-select"],
     queryFn: async () => {
       const response: any = await getMCUs();
       return response.data;

@@ -26,7 +26,6 @@ export function DataTableRowActions<TData>({
   onEdit,
   onView
 }: DataTableRowActionsProps<TData>) {
-console.log("item", row.original);
 
   const item = useMemo(()=>schema.parse(row.original), [row.original]);
 

@@ -75,7 +75,7 @@ const AddEditCollectionCenter = ({ mode, initialData, handleCancel }: AddEditCol
   })
 
   const { data: amcoss, isLoading: loadAmcos } = useQuery({
-    queryKey: ['amcos'],
+    queryKey: ['amcos-select'],
     queryFn: async () => {
       const response: any = await getAMCOSs()
       console.log(response)

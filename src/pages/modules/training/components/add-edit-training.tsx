@@ -77,7 +77,7 @@ const AddEditTraining = ({ mode, initialData, handleCancel }: AddEditTrainingPro
 
   // Fetch AMCOS
   const { data: amcosList, isLoading: loadingAMCOS } = useQuery({
-    queryKey: ['amcos'],
+    queryKey: ['amcos-select'],
     queryFn: async () => {
       const response: any = await getAMCOSs()
       return response

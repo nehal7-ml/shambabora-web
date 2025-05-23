@@ -222,7 +222,7 @@ const AddEditFarmerHarvest = ({ mode, initialData, handleCancel }: AddEditFarmer
     isLoading: loadingCrops,
     // error: errorCrops,
   } = useQuery({
-    queryKey: ['crops'],
+    queryKey: ['crops-select'],
     queryFn: async () => {
       const response: any = await getCrops();
       return response.data;
@@ -233,7 +233,7 @@ const AddEditFarmerHarvest = ({ mode, initialData, handleCancel }: AddEditFarmer
   const {
     data: amcos,
   } = useQuery({
-    queryKey: ['amcos'],
+    queryKey: ['amcos-select'],
     queryFn: async () => {
       const response: any = await getAMCOSs();
       return snakeToCamelCase(response.data);
@@ -246,7 +246,7 @@ const AddEditFarmerHarvest = ({ mode, initialData, handleCancel }: AddEditFarmer
     isLoading: loadingCollectionCenter,
     // error: errorCollectionCenter,
   } = useQuery({
-    queryKey: ['collection-center'],
+    queryKey: ['collection-center-select'],
     queryFn: async () => {
       const response: any = await getCollectionCenters();
       return snakeToCamelCase(response.data);

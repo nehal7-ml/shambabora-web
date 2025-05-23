@@ -118,7 +118,7 @@ const AddEditAmcos = ({
     data: mcus,
     isLoading: loadingMCU,
   } = useQuery({
-    queryKey: ['mcus'],
+    queryKey: ['mcus-select'],
     queryFn: async () => {
       const response: any = await getMCUs()
       return response.data

@@ -13,7 +13,7 @@ export const getUsers = () => api.get(url.USERS);
 export const deleteUser = (id: number, data: any) => api.delete(url.USERS + id, data);
 export const updateUser = (id: number, data: any) => api.patch(url.USERS + id, data);
 export const retrieveUser = (id: string) => api.get(url.USERS + id);
-export const getUsersWithRole = (role:'farmer'| 'amcos_admin' |'union_admin') => api.get(url.USERS , { role });
+export const getUsersWithRole = (role: 'farmer' | 'amcos_admin' | 'union_admin') => api.get(url.USERS, { role });
 
 
 //LOCATION
@@ -114,8 +114,8 @@ export const postFarms = (data: any) => api.create(url.FARMS, data);
 //  The search is not complete and can not filter the result
 export const getFarmers = () => api.get(url.FARMERS);
 export const getFarmerHarvests = (id: any) => api.get(url.FARMERS_HARVERSTS + id);
-export const deleteFarmer = (id: number, data: any) => api.delete(url.FARMERS + id, data);
-export const updateFarmer = (id: number, data: any) => api.patch(url.FARMERS + id, data);
+export const deleteFarmer = (id: string, data: any) => api.delete(url.FARMERS + id, data);
+export const updateFarmer = (id: string, data: any) => api.patch(url.FARMERS + id, data);
 export const retrieveFarmer = (id: string) => api.get(url.FARMERS + id);
 export const retrieveFarmerFarms = (id: string) => api.get(url.FARMERS + id);
 
