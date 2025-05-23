@@ -1,5 +1,24 @@
 import { z } from 'zod';
 
+
+const relatedData = z.object({
+  id: z.string(),
+  name: z.string(),
+})
+
+
+const receivedBySchema = z.object({
+  id: z.string(),
+  firstName: z.string().nullable().optional(),
+  lastName: z.string().nullable().optional(),
+  email: z.string(),
+})
+const farmerSchema = z.object({
+  id: z.string(),
+  firstName: z.string().nullable().optional(),
+  lastName: z.string().nullable().optional(),
+  email: z.string(),
+})
 export const bagSchema = z.object({
   grade: z.string(),
   weight: z.string(), // e.g. "41.5 kg"
@@ -8,6 +27,13 @@ export const bagSchema = z.object({
 
 export const schema = z.object({
   id: z.string(), // UUID
+
+  farmer: farmerSchema,            // UUID
+  amcos: relatedData,             // UUID
+  crop: relatedData,              // UUID
+  collectionCenter: relatedData,  // UUID
+  receivedBy: receivedBySchema,        // UUID
+
 
   grossWeight: z.string(),       // "124.5 kg"
   netWeight: z.string(),         // "120.2 kg"
@@ -20,11 +46,6 @@ export const schema = z.object({
   }),
 
   receiptNumber: z.string(),     // UUID
-  farmer: z.string(),            // UUID
-  amcos: z.string(),             // UUID
-  receivedBy: z.string(),        // UUID
-  crop: z.string(),              // UUID
-  collectionCenter: z.string(),  // UUID
   tumeNumber: z.string(),
 
   createdBy: z.string(),         // UUID

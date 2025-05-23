@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
-  handleAdd: ()=> void
+  handleAdd: () => void
 }
 
 export function DataTableToolbar<TData>({
@@ -24,9 +24,9 @@ export function DataTableToolbar<TData>({
         <div className=' flex gap-1'>
           <Input
             placeholder='Filter Harvest...'
-            value={(table.getColumn('farmerName')?.getFilterValue() as string) ?? ''}
+            value={(table.getColumn('farmer')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
-              table.getColumn('farmerName')?.setFilterValue(event.target.value)
+              table.getColumn('farmer')?.setFilterValue(event.target.value)
             }
             className='h-8 w-[150px] lg:w-[250px]'
           />
@@ -53,7 +53,7 @@ export function DataTableToolbar<TData>({
         )}
       </div>
       <DataTableViewOptions table={table} />
-      
+
     </div>
   )
 }

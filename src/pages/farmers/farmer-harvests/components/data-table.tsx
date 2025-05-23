@@ -83,7 +83,7 @@ export function DataTable<TData, TValue>({
 
 
 
-  const getColumns = React.useCallback((): ColumnDef<TData>[] => [
+  const getColumns = React.useCallback((): ColumnDef<DataSchema>[] => [
     {
       id: 'select',
       header: ({ table }) => (
@@ -121,6 +121,7 @@ export function DataTable<TData, TValue>({
       enableHiding: false,
     },
     {
+      accessorFn: (row) => row.farmer.email,
       accessorKey: 'farmer',
       header: ({ column }) => <DataTableColumnHeader column={column} title='Farmer ID' />,
       cell: ({ row }) => <span>{row.getValue('farmer')}</span>,
@@ -150,6 +151,7 @@ export function DataTable<TData, TValue>({
       enableHiding: false,
     },
     {
+      accessorFn: (row) => row.crop.name,
       accessorKey: 'crop',
       header: ({ column }) => <DataTableColumnHeader column={column} title='Crop Name' />,
       cell: ({ row }) => <span>{row.getValue('crop')}</span>,

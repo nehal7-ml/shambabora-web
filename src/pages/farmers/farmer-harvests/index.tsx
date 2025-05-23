@@ -6,8 +6,10 @@ import { DataTable } from './components/data-table'
 import { columns } from './components/columns'
 // import { regions } from './data/data'
 import { useQuery } from '@tanstack/react-query'
-import { getAllFarmersHarvests } from '@/helpers/api-helper'
-import { snakeToCamelCase } from "@/lib/utils"
+import { getAllFarmersHarvests, getAMCOSs, getCollectionCenters, getCrops, getUsersWithRole } from '@/helpers/api-helper'
+import { connectArrays, snakeToCamelCase } from "@/lib/utils"
+import { useMemo } from 'react'
+import { DataSchema } from './data/schema'
 
 export default function Harvests() {
   const { data: harvests, isLoading } = useQuery({
@@ -18,6 +20,73 @@ export default function Harvests() {
     },
   });
 
+  const { data: farmers, isLoading: isFarmersLoading } = useQuery({
+    queryKey: ["user-farmers"],
+    queryFn: async () => {
+      const response = await getUsersWithRole("farmer");
+      return response.data;
+    }
+  })
+  const { data: admins, isLoading: isAdminsLoading } = useQuery({
+    queryKey: ["amcos-admins"],
+    queryFn: async () => {
+      const response = await getUsersWithRole("amcos_admin");
+      return response.data;
+    }
+  })
+
+  const { data: unionAdmins, isLoading: isUnionAdminsLoading } = useQuery({
+    queryKey: ["union-admins"],
+    queryFn: async () => {
+      const response = await getUsersWithRole("union_admin");
+      return response.data;
+    }
+  })
+
+  const { data: crops, isLoading: isCropsLoading } = useQuery({
+    queryKey: ["crops"],
+    queryFn: async () => {
+      const response = await getCrops()
+      return response.data
+    }
+  })
+
+  const { data: amcos, isLoading: isAmcosLoading } = useQuery({
+    queryKey: ["amcos"],
+    queryFn: async () => {
+      const response = await getAMCOSs()
+      return response.data
+    }
+  })
+
+  const { data: collectionCenters, isLoading: isCollectionCentersLoading } = useQuery({
+    queryKey: ["collection-centers"],
+    queryFn: async () => {
+      const response = await getCollectionCenters()
+      return response.data
+    }
+  })
+
+
+  const harvestData = useMemo<DataSchema[]>(() => {
+    if (isLoading || isAdminsLoading || isUnionAdminsLoading || isCropsLoading || isAmcosLoading || isCollectionCentersLoading) return
+    const data = connectArrays(harvests?.data,
+      {
+        amcos: amcos,
+        collectionCenter: collectionCenters,
+        crop: crops,
+        receivedBy: admins.concat(unionAdmins),
+        farmer: farmers
+      }, [
+      { mainKey: 'amcos', sourceArrayName: 'amcos', linkedKey: 'id', newPropertyName: 'amcos' },
+      { mainKey: 'collectionCenter', sourceArrayName: 'collectionCenter', linkedKey: 'id', newPropertyName: 'collectionCenter' },
+      { mainKey: 'crop', sourceArrayName: 'crop', linkedKey: 'id', newPropertyName: 'crop' },
+      { mainKey: 'receivedBy', sourceArrayName: 'receivedBy', linkedKey: 'id', newPropertyName: 'receivedBy' },
+      { mainKey: 'farmer', sourceArrayName: 'farmer', linkedKey: 'id', newPropertyName: 'farmer' }
+    ])
+
+    return data as DataSchema[]
+  }, [harvests, farmers, amcos, collectionCenters, crops, admins, unionAdmins])
 
   return (
     <Layout>
@@ -41,7 +110,7 @@ export default function Harvests() {
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
           {
-            isLoading ? <div>Loading .....</div> : <DataTable data={harvests?.data ?? []} columns={columns} />
+            isLoading ? <div>Loading .....</div> : <DataTable data={harvestData ?? []} columns={columns} />
           }
         </div>
       </Layout.Body>
