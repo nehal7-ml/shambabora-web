@@ -59,8 +59,8 @@ const AddEditCollectionCenter = ({ mode, initialData, handleCancel }: AddEditCol
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: initialData?.name || '',
-      amcos: initialData?.amcos,
-      village: initialData?.village,
+      amcos: initialData?.amcos.id ?? '',
+      village: initialData?.village.id ?? '',
 
     },
   })
@@ -75,7 +75,7 @@ const AddEditCollectionCenter = ({ mode, initialData, handleCancel }: AddEditCol
   })
 
   const { data: amcoss, isLoading: loadAmcos } = useQuery({
-    queryKey: ['amcos'],
+    queryKey: ['amcos-select'],
     queryFn: async () => {
       const response: any = await getAMCOSs()
       console.log(response)

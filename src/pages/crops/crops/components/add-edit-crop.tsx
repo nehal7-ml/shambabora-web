@@ -34,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Please enter Crop name" }),
@@ -65,8 +66,8 @@ const AddEditCrop = ({ mode, initialData, handleCancel }: AddEditCropProps) => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: initialData?.name || "",
-      type: initialData?.type || "",
-      uom: initialData?.uom || "",
+      type: initialData?.type.id || "",
+      uom: initialData?.uom.id || "",
       packaging: initialData?.packaging || "",
       moisture_content_computation:
         initialData?.moisture_content_computation || false,
@@ -136,6 +137,9 @@ const AddEditCrop = ({ mode, initialData, handleCancel }: AddEditCropProps) => {
     };
     mutation.mutate(finalData);
   }
+
+
+
   return (
     <Dialog open={true} onOpenChange={handleCancel}>
       <DialogContent>

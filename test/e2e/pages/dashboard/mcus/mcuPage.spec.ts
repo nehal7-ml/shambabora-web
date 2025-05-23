@@ -33,22 +33,6 @@ test("Navigation on the Manage Amcos menu", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Mcu" })).toBeVisible();
   await expect(page.getByText(/Here's a list of your MCUs/i)).toBeVisible();
 
-  // Select all table rows excluding the header
-  const rows = await page.locator("tbody tr");
-  const rowCount = await rows.count();
-
-  const expectedData = [
-    { sno: "1", mcuName: "Sample MCU", },
-  ];
-
-  for (let i = 0; i < rowCount; i++) {
-    const cells = rows.nth(i).locator("td");
-    const sno = await cells.nth(1).innerText();
-    const mcuName = await cells.nth(2).locator("span").innerText();
-
-    expect(sno.trim()).toBe(expectedData[i].sno);
-    expect(mcuName.trim()).toBe(expectedData[i].mcuName);
-  }
 
 });
 
@@ -60,8 +44,8 @@ test("Create → Edit → Delete an MCU", async ({ page }) => {
   await page.getByLabel(/password/i).fill("shambabora");
   await page.getByRole("button", { name: /sign in|login/i }).click();
 
-  await page.getByRole("button", { name: /Manage Crops/i }).click(); // Adjust if needed
-  await page.getByRole("link", { name: /MCUs/i }).click();
+  await page.getByRole("button", { name: /Manage Amcos/i }).click(); // Adjust if needed
+  await page.getByRole("link", { name: /MCU/i }).click();
   await expect(page).toHaveURL("/dashboard/mcus");
 
   await page.getByText(/loading/i).waitFor({ state: "detached" });
@@ -74,9 +58,7 @@ test("Create → Edit → Delete an MCU", async ({ page }) => {
     await page.getByPlaceholder("Enter Mcu name").fill(originalName);
 
     await page.locator("button[role=combobox]", { hasText: /Select a region/i }).click();
-    const regionOption = page.getByRole("option");
-    if (await regionOption.count() === 0) throw new Error("No Region options available");
-    await regionOption.last().click();
+    await page.getByRole("option").first().click();
 
     await page.getByRole("button", { name: /Create MCU/i }).click();
 

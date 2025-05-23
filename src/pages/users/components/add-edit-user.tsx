@@ -92,7 +92,7 @@ const AddEditFarmer = ({
 
   // Fetch Crops
   const { data: crops, isLoading: loadingCrops } = useQuery({
-    queryKey: ['crops'],
+    queryKey: ['crops-select'],
     queryFn: async () => {
       const response: any = await getCrops()
       return response.data
@@ -104,7 +104,7 @@ const AddEditFarmer = ({
     data: amcos,
     // isLoading: loadingAmcos,
   } = useQuery({
-    queryKey: ['amcos'],
+    queryKey: ['amcos-select'],
     queryFn: async () => {
       const response: any = await getAMCOSs()
       return response.data

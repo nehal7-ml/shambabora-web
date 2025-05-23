@@ -6,19 +6,51 @@ import { DataTable } from './components/data-table'
 import { columns } from './components/columns'
 // import { regions } from './data/data'
 import { useQuery } from '@tanstack/react-query'
-import { getCrops } from '@/helpers/api-helper'
+import { getCrops, getCropTypes, getMeasurementUnit } from '@/helpers/api-helper'
+import { connectArrays } from '@/lib/utils'
+import { useMemo } from "react"
+import { DataSchema } from "./data/schema"
 
 export default function Region() {
   const { data: crops, isLoading } = useQuery({
     queryKey: ["crops"],
     queryFn: async () => {
-      const response: any = await getCrops();
-      console.log("crops query:", response);
-      return response;
+      const cropsRes: any = await getCrops();
+      return cropsRes.data;
+      // used to link relations data read the jsDoc of connectArrays
+     
     },
   });
 
-  console.log("crops", crops);
+  const { data: cropsTypesRes, isLoading: isCropTypesLoading } = useQuery({
+    queryKey: ["crops-types"],
+    queryFn: async () => {
+      const response: any = await getCropTypes();
+      return response.data;
+    },
+  });
+
+  const { data: uomTypesRes, isLoading: isUomTypesLoading } = useQuery({
+    queryKey: ["uom-types"],
+    queryFn: async () => {
+      const response: any = await getMeasurementUnit();
+      return response.data;
+    },
+  });
+
+  const cropsData = useMemo<DataSchema[]>(() => {
+    if (isLoading || isCropTypesLoading || isUomTypesLoading) return
+    const data = connectArrays<DataSchema>(crops,
+      {
+        cropTypes: cropsTypesRes,
+        uom: uomTypesRes,
+      },
+      [{ mainKey: 'type', linkedKey: 'id', newPropertyName: 'type', sourceArrayName: 'cropTypes', },
+      { mainKey: 'uom', linkedKey: 'id', newPropertyName: 'uom', sourceArrayName: 'uom', }]
+    )
+    return data
+  },[crops, cropsTypesRes, uomTypesRes, isLoading, isCropTypesLoading, isUomTypesLoading])
+
 
   return (
     <Layout>
@@ -42,7 +74,7 @@ export default function Region() {
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
           {
-            isLoading ? <div>Loading .....</div> : <DataTable data={crops?.data ?? []} columns={columns} />
+            isLoading ? <div>Loading .....</div> : <DataTable data={cropsData ?? []} columns={columns} />
           }
         </div>
       </Layout.Body>

@@ -6,7 +6,6 @@ const api = new APIClient();
 
 export const postLogin = (data: any) => api.create(url.POST_LOGIN_USER, data);
 export const postUserSetup = (data: any) => api.create(url.POST_REGISTER_USER, data);
-export const getDashboard = () => api.get(url.Dashboard);
 
 //USERS
 export const postUser = (data: any) => api.create(url.USERS, data);
@@ -14,7 +13,7 @@ export const getUsers = () => api.get(url.USERS);
 export const deleteUser = (id: number, data: any) => api.delete(url.USERS + id, data);
 export const updateUser = (id: number, data: any) => api.patch(url.USERS + id, data);
 export const retrieveUser = (id: string) => api.get(url.USERS + id);
-export const getUsersWithRole = (role:'farmer'| 'amcos_admin' |'union_admin') => api.get(url.USERS , { role });
+export const getUsersWithRole = (role: 'farmer' | 'amcos_admin' | 'union_admin') => api.get(url.USERS, { role });
 
 
 //LOCATION
@@ -78,17 +77,17 @@ export const updateVillages = (id: number, data: any) => api.update(url.VILLAGES
 export const postLocationCropTypes = (data: any) => api.create(url.CROP_TYEPS, data);
 export const getCropTypes = () => api.get(url.CROP_TYEPS);
 export const deleteCropTypes = (id: number, data: any) => api.delete(url.CROP_TYEPS + id, data);
-export const updateCropTypes = (id: number, data: any) => api.put(url.CROP_TYEPS + id, data);
+export const updateCropTypes = (id: number, data: any) => api.patch(url.CROP_TYEPS + id, data);
 
 export const postCrops = (data: any) => api.create(url.CROPS, data);
 export const getCrops = () => api.get(url.CROPS);
 export const deleteCrops = (id: number, data: any) => api.delete(url.CROPS + id, data);
-export const updateCrops = (id: number, data: any) => api.put(url.CROPS + id, data);
+export const updateCrops = (id: number, data: any) => api.patch(url.CROPS + id, data);
 
 export const postMeasurementUnit = (data: any) => api.create(url.MEASUREMENT_UNITS, data);
 export const getMeasurementUnit = () => api.get(url.MEASUREMENT_UNITS);
 export const deleteMeasurementUnit = (id: number, data: any) => api.delete(url.MEASUREMENT_UNITS + id, data);
-export const updateMeasurementUnit = (id: number, data: any) => api.put(url.MEASUREMENT_UNITS + id, data);
+export const updateMeasurementUnit = (id: number, data: any) => api.patch(url.MEASUREMENT_UNITS + id, data);
 
 
 //MCUS
@@ -115,8 +114,8 @@ export const postFarms = (data: any) => api.create(url.FARMS, data);
 //  The search is not complete and can not filter the result
 export const getFarmers = () => api.get(url.FARMERS);
 export const getFarmerHarvests = (id: any) => api.get(url.FARMERS_HARVERSTS + id);
-export const deleteFarmer = (id: number, data: any) => api.delete(url.FARMERS + id, data);
-export const updateFarmer = (id: number, data: any) => api.patch(url.FARMERS + id, data);
+export const deleteFarmer = (id: string, data: any) => api.delete(url.FARMERS + id, data);
+export const updateFarmer = (id: string, data: any) => api.patch(url.FARMERS + id, data);
 export const retrieveFarmer = (id: string) => api.get(url.FARMERS + id);
 export const retrieveFarmerFarms = (id: string) => api.get(url.FARMERS + id);
 

@@ -1,13 +1,13 @@
 import { test, expect } from "@playwright/test";
 
-test("Create → Edit → Delete a Farmer", async ({ page }) => {
+test("Create → Edit -> View → Delete a Farmer", async ({ page }) => {
   await page.goto("/sign-in");
 
   await page.getByLabel(/email/i).fill("Kenny27@yahoo.com");
   await page.getByLabel(/password/i).fill("shambabora");
   await page.getByRole("button", { name: /sign in|login/i }).click();
 
-  await expect(page).toHaveURL(/dashboard/i, { timeout: 6000 });
+  await expect(page).toHaveURL(/dashboard/i, { timeout: 7000 });
   await page.getByRole("link", { name: 'Farmers', exact: true }).click();
   await expect(page).toHaveURL("/dashboard/farmers");
 
@@ -16,7 +16,6 @@ test("Create → Edit → Delete a Farmer", async ({ page }) => {
   const uniqueSuffix = Date.now();
   const originalFirstName = `TestFirst-${uniqueSuffix}`;
   const updatedFirstName = `${originalFirstName}-Edited`;
-
   await test.step("Create Farmer", async () => {
     await page.getByRole("button", { name: "Add Farmer" }).click();
 
@@ -37,7 +36,19 @@ test("Create → Edit → Delete a Farmer", async ({ page }) => {
     await page.locator("button[role=combobox]", { hasText: /Select Education Level/i }).click();
     await page.getByRole("option", { name: 'Primary', exact: true }).click();
 
+    await page.locator("button[role=combobox]", { hasText: /Select AMCOS/i }).click();
+    await page.getByRole("option").first().click();
     await page.getByRole("button", { name: /Create Farmer/i }).click();
+
+    // since new records go the end click last pasge if active
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
+
+
     await expect(page.getByText(originalFirstName)).toBeVisible();
   });
 
@@ -52,11 +63,43 @@ test("Create → Edit → Delete a Farmer", async ({ page }) => {
     await firstNameInput.fill(updatedFirstName);
 
     await page.getByRole("button", { name: /Update Farmer/i }).click();
+    // since new records go the end click last pasge if active
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
+
 
     await expect(page.getByText(updatedFirstName)).toBeVisible();
   });
+  await test.step("View Farmer", async () => {
+    const row = page.locator("tr", { hasText: updatedFirstName }).first();
+    const kebab = row.locator('button[aria-haspopup="menu"]');
+    await kebab.click();
+    await page.getByRole("menuitem", { name: /View/i }).click();
+
+    await expect(page).toHaveURL(/farmer-harvests/i);
+
+    await expect(page.getByText(updatedFirstName)).toBeVisible();
+
+    await page.goBack()
+
+    await expect(page).toHaveURL("/dashboard/farmers");
+
+  })
 
   await test.step("Delete Farmer", async () => {
+
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
+
+
     const row = page.locator("tr", { hasText: updatedFirstName }).first();
     const kebab = row.locator('button[aria-haspopup="menu"]');
     await kebab.click();

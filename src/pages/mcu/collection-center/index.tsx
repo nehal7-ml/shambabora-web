@@ -6,15 +6,34 @@ import { DataTable } from './components/data-table'
 import { columns } from './components/columns'
 // import { regions } from './data/data'
 import { useQuery } from '@tanstack/react-query'
-import { getCollectionCenters } from '@/helpers/api-helper'
+import { getAMCOSs, getCollectionCenters, getRVillages } from '@/helpers/api-helper'
+import { connectArrays } from '@/lib/utils'
 
 export default function Region() {
   const { data: collectionCenters, isLoading } = useQuery({
     queryKey: ["collectionCenters"],
     queryFn: async () => {
-      const response: any = await getCollectionCenters();
-      console.log(response);
-      return response;
+      const collectionCentersRes: any = await getCollectionCenters();
+      const amcosRes: any = await getAMCOSs();
+      const villageRes: any = await getRVillages();
+
+      const data = connectArrays(collectionCentersRes.data,
+        {
+          amcos: amcosRes.data,
+          village: villageRes.data,
+        },
+        [{
+          mainKey: 'amcos',
+          sourceArrayName: 'amcos',
+          linkedKey: 'id',
+          newPropertyName: 'amcos'
+        }, {
+          mainKey: 'village',
+          sourceArrayName: 'village',
+          linkedKey: 'id',
+          newPropertyName: 'village'
+        }])
+      return data;
     },
   });
 
@@ -42,7 +61,7 @@ export default function Region() {
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
           {
-            isLoading ? <div>Loading .....</div> : <DataTable data={collectionCenters?.data ?? []} columns={columns} />
+            isLoading ? <div>Loading .....</div> : <DataTable data={collectionCenters ?? []} columns={columns} />
           }
         </div>
       </Layout.Body>

@@ -49,7 +49,7 @@ const AddEditMcu = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: initialData?.name || '',
-      region: initialData?.region?.toString() || '',
+      region: initialData?.region.id.toString() || '',
     },
   })
 

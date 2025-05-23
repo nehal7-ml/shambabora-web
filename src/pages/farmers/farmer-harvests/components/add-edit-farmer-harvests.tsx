@@ -162,13 +162,13 @@ const AddEditFarmerHarvest = ({ mode, initialData, handleCancel }: AddEditFarmer
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      farmer: initialData?.farmer || '',
-      receivedBy: initialData?.receivedBy || '',
+      farmer: initialData?.farmer.id || '',
+      receivedBy: initialData?.receivedBy.id || '',
       tumeNumber: initialData?.tumeNumber || '',
       receiptNumber: initialData?.receiptNumber || '',
-      amcos: initialData?.amcos || '',
-      collectionCenter: initialData?.collectionCenter || '',
-      crop: initialData?.crop || '',
+      amcos: initialData?.amcos.id || '',
+      collectionCenter: initialData?.collectionCenter.id || '',
+      crop: initialData?.crop.id || '',
       grossWeight: initialData?.grossWeight || '',
       netWeight: initialData?.netWeight || '',
       packagingWeight: initialData?.packagingWeight || '',
@@ -186,7 +186,7 @@ const AddEditFarmerHarvest = ({ mode, initialData, handleCancel }: AddEditFarmer
     isLoading: loadFarmers,
     // error: errorFarmers,
   } = useQuery({
-    queryKey: ['farmers'],
+    queryKey: ['user-farmers'],
     queryFn: async () => {
       const response: any = await getUsersWithRole('farmer');
       return snakeToCamelCase(response.data);
@@ -222,7 +222,7 @@ const AddEditFarmerHarvest = ({ mode, initialData, handleCancel }: AddEditFarmer
     isLoading: loadingCrops,
     // error: errorCrops,
   } = useQuery({
-    queryKey: ['crops'],
+    queryKey: ['crops-select'],
     queryFn: async () => {
       const response: any = await getCrops();
       return response.data;
@@ -233,7 +233,7 @@ const AddEditFarmerHarvest = ({ mode, initialData, handleCancel }: AddEditFarmer
   const {
     data: amcos,
   } = useQuery({
-    queryKey: ['amcos'],
+    queryKey: ['amcos-select'],
     queryFn: async () => {
       const response: any = await getAMCOSs();
       return snakeToCamelCase(response.data);
@@ -246,7 +246,7 @@ const AddEditFarmerHarvest = ({ mode, initialData, handleCancel }: AddEditFarmer
     isLoading: loadingCollectionCenter,
     // error: errorCollectionCenter,
   } = useQuery({
-    queryKey: ['CollectionCenter'],
+    queryKey: ['collection-center-select'],
     queryFn: async () => {
       const response: any = await getCollectionCenters();
       return snakeToCamelCase(response.data);

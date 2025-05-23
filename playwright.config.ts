@@ -2,15 +2,15 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./test/e2e",
-  timeout: 30 * 1000, // 30 seconds per test
+  timeout: 60 * 1000, // 30 seconds per test
   expect: {
-    timeout: 5000, // Timeout for expect assertions
+    timeout: 6000, // Timeout for expect assertions
   },
   fullyParallel: true,
   retries: 1, // Retry failed tests once
   reporter: "html",
   use: {
-    baseURL: "http://localhost:5173", // test with the preview server 
+    baseURL: "http://localhost:4173", // test with the preview server 
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",

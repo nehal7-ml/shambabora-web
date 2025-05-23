@@ -1,5 +1,6 @@
 
 import { test, expect } from "@playwright/test";
+import { sleep } from "../../../../utls";
 
 test("Create → Edit → Delete a Collection Center", async ({ page }) => {
   await page.goto("/sign-in", { timeout: 60000 });
@@ -8,9 +9,9 @@ test("Create → Edit → Delete a Collection Center", async ({ page }) => {
   await page.getByLabel(/password/i).fill("shambabora");
   await page.getByRole("button", { name: /sign in|login/i }).click();
 
-  await page.getByRole("button", { name: /Manage Crops/i }).click(); // Adjust if Collection Center is in a separate menu
-  await page.getByRole("link", { name: /Collection Centers/i }).click();
-  await expect(page).toHaveURL("/dashboard/collection-centers");
+  await page.getByRole("button", { name: /Manage Amcos/i }).click(); // Adjust if Collection Center is in a separate menu
+  await page.getByRole("link", { name: /Collection Center/i }).click();
+  await expect(page).toHaveURL("/dashboard/collection-center");
 
   await page.getByText(/loading/i).waitFor({ state: "detached" });
 
@@ -21,6 +22,8 @@ test("Create → Edit → Delete a Collection Center", async ({ page }) => {
     await page.getByRole("button", { name: "Add Collection Center" }).click();
     await page.getByPlaceholder("Enter CollectionCenter name").fill(originalName);
 
+
+    await sleep(1000);
     // Amcos dropdown
     await page.locator("button[role=combobox]", { hasText: /Select a Amcos/i }).click();
     const amcosOption = page.getByRole("option");
@@ -34,7 +37,13 @@ test("Create → Edit → Delete a Collection Center", async ({ page }) => {
     await villageOption.last().click();
 
     await page.getByRole("button", { name: /Create Collection Center/i }).click();
+    // since new records go the end click last pasge if active
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
 
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
     const newRow = page.locator("tbody tr", { hasText: originalName });
     await expect(newRow).toBeVisible();
   });
@@ -52,6 +61,13 @@ test("Create → Edit → Delete a Collection Center", async ({ page }) => {
     await page.getByRole("button", { name: /update/i }).click();
 
     const updatedRow = page.locator("tbody tr", { hasText: updatedName });
+    // since new records go the end click last pasge if active
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
     await expect(updatedRow).toBeVisible();
   });
 

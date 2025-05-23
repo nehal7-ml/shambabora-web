@@ -51,6 +51,16 @@ test("Create → Edit → Delete AMCOS", async ({ page }) => {
     await page.getByPlaceholder("Enter Website").fill(`https://testamcos${uniqueSuffix}.com`);
 
     await page.getByRole("button", { name: /create amcos/i }).click();
+
+    // since new records go the end click last pasge if active
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
+
+
     await expect(page.getByText(originalName)).toBeVisible();
   });
 
@@ -65,6 +75,15 @@ test("Create → Edit → Delete AMCOS", async ({ page }) => {
     await nameInput.fill(updatedName);
 
     await page.getByRole("button", { name: /update amcos/i }).click();
+
+    // since new records go the end click last pasge if active
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
+
 
     await expect(page.getByText(updatedName)).toBeVisible();
   });

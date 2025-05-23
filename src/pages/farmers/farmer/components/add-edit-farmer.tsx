@@ -43,7 +43,8 @@ interface AddEditFarmerProps {
   mode: 'add' | 'edit'
   //@ts-ignore
   initialData?: {
-    id: number
+    id: string,
+    uuid: string
     firstName: string
     lastName: string
     sex: string
@@ -62,7 +63,7 @@ interface AddEditFarmerProps {
     | 'UNIVERSITY_PHD'
     | 'NON_FORMAL_EDUCATION'
     amcosMemberId: string
-    amcos: number[]
+    amcos: { id: string }
     image: string
     ttbNumber: string
     tinNumber: string
@@ -107,7 +108,7 @@ const AddEditFarmer = ({
       //@ts-ignore
       educationLevel: initialData?.educationLevel || '',
       amcosMemberId: initialData?.amcosMemberId || '',
-      amcos: initialData?.amcos ? [initialData.amcos] : [],
+      amcos: initialData?.amcos ? initialData.amcos?.id : "",
       image: initialData?.image || '',
       ttbNumber: initialData?.ttbNumber || '',
       tinNumber: initialData?.tinNumber || '',
@@ -118,7 +119,7 @@ const AddEditFarmer = ({
 
   // Fetch Crops
   const { data: crops, isLoading: loadingCrops } = useQuery({
-    queryKey: ['crops'],
+    queryKey: ['crops-select'],
     queryFn: async () => {
       const response: any = await getCrops()
       return response.data
@@ -130,7 +131,7 @@ const AddEditFarmer = ({
     data: amcos,
     // isLoading: loadingAmcos,
   } = useQuery({
-    queryKey: ['amcos'],
+    queryKey: ['amcos-select'],
     queryFn: async () => {
       const response: any = await getAMCOSs()
       return response.data
@@ -175,7 +176,8 @@ const AddEditFarmer = ({
   function onSubmit(data: FormSchema) {
     let finalData = {
       ...data,
-      amcos: data.amcos[0]
+      // uuid: initialData.uuid ?? undefined,
+      amcos: data.amcos
     }
     if (imageBase64) {
       finalData.image = imageBase64
@@ -560,20 +562,30 @@ const AddEditFarmer = ({
                         AMCOS <span className='text-red-500'>*</span>
                       </FormLabel>
                       <FormControl>
-                        <MultiSelectReactSelect
-                          options={
-                            amcos?.length > 0 ?
-
-                              amcos?.map((amcos: any) => ({
-                                value: amcos.id,
-                                label: amcos.name,
-                              })) : []}
-                          value={field.value || []}
-                          onChange={(selected) =>
-                            form.setValue('amcos', selected)
-                          }
-                          placeholder='Select AMCOS'
-                        />
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder='Select AMCOS' />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {amcos?.length > 0 ? (
+                              amcos.map((amcos: any) => (
+                                <SelectItem
+                                  key={amcos.id}
+                                  value={amcos.id}
+                                >
+                                  {amcos.name}
+                                </SelectItem>
+                              ))
+                            ) : (
+                              <SelectItem disabled value='none'>
+                                No AMCOS Found
+                              </SelectItem>
+                            )}
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
