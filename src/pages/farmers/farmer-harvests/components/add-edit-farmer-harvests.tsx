@@ -40,7 +40,7 @@ import ThemeSwitch from '@/components/theme-switch';
 import { UserNav } from '@/components/user-nav';
 import { Layout } from '@/components/custom/layout'
 import { Search } from '@/components/search';
-import { camelToSnakeCase, snakeToCamelCase } from '@/lib/utils';
+import { camelToSnakeCase, connectArrays, snakeToCamelCase } from '@/lib/utils';
 import { bagSchema, DataSchema } from "../data/schema";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -162,7 +162,7 @@ const AddEditFarmerHarvest = ({ mode, initialData, handleCancel }: AddEditFarmer
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      farmer: initialData?.farmer.id || '',
+      farmerId: initialData?.farmer.id || '',
       receivedBy: initialData?.receivedBy.id || '',
       tumeNumber: initialData?.tumeNumber || '',
       receiptNumber: initialData?.receiptNumber || '',
@@ -186,10 +186,15 @@ const AddEditFarmerHarvest = ({ mode, initialData, handleCancel }: AddEditFarmer
     isLoading: loadFarmers,
     // error: errorFarmers,
   } = useQuery({
-    queryKey: ['user-farmers'],
+    queryKey: ['farmers-with-user'],
     queryFn: async () => {
-      const response: any = await getUsersWithRole('farmer');
-      return snakeToCamelCase(response.data);
+      const response: any = await getFarmers()
+      const userResponse: any = await getUsersWithRole('farmer')
+
+      const farmerData = connectArrays(response.data, { user: userResponse.data }, [
+        { mainKey: 'user', sourceArrayName: 'user', linkedKey: 'id', newPropertyName: 'user' }
+      ])
+      return snakeToCamelCase(farmerData);
     },
   });
 
@@ -322,7 +327,7 @@ const AddEditFarmerHarvest = ({ mode, initialData, handleCancel }: AddEditFarmer
                 {/* Select Farmer */}
                 <FormField
                   control={form.control}
-                  name="farmer"
+                  name="farmerId"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Farmer</FormLabel>
@@ -342,9 +347,9 @@ const AddEditFarmerHarvest = ({ mode, initialData, handleCancel }: AddEditFarmer
                                 farmers?.map((farmer: any) => (
                                   <SelectItem
                                     key={farmer.id}
-                                    value={farmer.id?.toString()}
+                                    value={farmer.user?.id?.toString()}
                                   >
-                                    {`${farmer.email}`}
+                                    {`${farmer.user.email}`}
                                   </SelectItem>
                                 ))
                               )}

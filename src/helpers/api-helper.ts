@@ -4,6 +4,7 @@ import * as url from "../constants/api-endpoints"
 
 const api = new APIClient();
 
+
 export const postLogin = (data: any) => api.create(url.POST_LOGIN_USER, data);
 export const postUserSetup = (data: any) => api.create(url.POST_REGISTER_USER, data);
 
@@ -81,6 +82,7 @@ export const updateCropTypes = (id: number, data: any) => api.patch(url.CROP_TYE
 
 export const postCrops = (data: any) => api.create(url.CROPS, data);
 export const getCrops = () => api.get(url.CROPS);
+export const retreiveCrop = (id: number) => api.get(url.CROPS + id);
 export const deleteCrops = (id: number, data: any) => api.delete(url.CROPS + id, data);
 export const updateCrops = (id: number, data: any) => api.patch(url.CROPS + id, data);
 
@@ -97,27 +99,36 @@ export const deleteMCU = (id: number, data: any) => api.delete(url.MCUS + id, da
 export const updateMCU = (id: number, data: any) => api.patch(url.MCUS + id, data);
 
 export const postAMCOS = (data: any) => api.create(url.AMCOS, data);
+export const retriveAmcos = (id: number) => api.get(url.AMCOS + id);
 export const getAMCOSs = () => api.get(url.AMCOS);
 export const deleteAMCOS = (id: string, data: any) => api.delete(url.AMCOS + id, data);
 export const updateAMCOS = (id: string, data: any) => api.patch(url.AMCOS + id, data);
 
 export const postCollectionCenter = (data: any) => api.create(url.COLLECTION_CENTEER, data);
+export const retrieveCollectionCenter = (id: number) => api.get(url.COLLECTION_CENTEER + id);
 export const getCollectionCenters = () => api.get(url.COLLECTION_CENTEER);
 export const deleteCollectionCenter = (id: number, data: any) => api.delete(url.COLLECTION_CENTEER + id, data);
 export const updateCollectionCenter = (id: number, data: any) => api.patch(url.COLLECTION_CENTEER + id, data);
 
 
-//FARMERS
-export const postFarmer = (data: any) => api.create(url.FARMERS, data);
+
+
+//Farms
 export const postFarms = (data: any) => api.create(url.FARMS, data);
+export const getFarms = () => api.get(url.FARMS);
+export const deleteFarm = (id: string, data: any) => api.delete(url.FARMS + id, data);
+export const updateFarm = (id: string, data: any) => api.patch(url.FARMS + id, data);
 
 //  The search is not complete and can not filter the result
+//FARMERS
+export const postFarmer = (data: any) => api.create(url.FARMERS, data);
 export const getFarmers = () => api.get(url.FARMERS);
-export const getFarmerHarvests = (id: any) => api.get(url.FARMERS_HARVERSTS + id);
+export const getFarmerHarvests = (id: any) => api.get(url.FARMERS_HARVERSTS + `?farmer_id=${id}`);
 export const deleteFarmer = (id: string, data: any) => api.delete(url.FARMERS + id, data);
 export const updateFarmer = (id: string, data: any) => api.patch(url.FARMERS + id, data);
 export const retrieveFarmer = (id: string) => api.get(url.FARMERS + id);
-export const retrieveFarmerFarms = (id: string) => api.get(url.FARMERS + id);
+export const retrieveFarmerWithUserId = (id: string) => api.get(url.FARMERS + `?user=${id}`);
+export const retrieveFarmerFarms = (id: string) => api.get(url.FARMS + `?farmer=${id}`);
 
 export const getAllFarmersHarvests = () => api.get(url.FARMERS_HARVERSTS);
 export const postFarmerHarvests = (data: any) => api.create(url.FARMERS_HARVERSTS, data);

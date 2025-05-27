@@ -35,8 +35,7 @@ test.describe("Test Users Page ", () => {
 
       await page.getByPlaceholder("Enter email").fill(email);
       await page.getByPlaceholder("Enter password").fill(password);
-      await page.getByPlaceholder("Enter First Name").fill(firstName);
-      await page.getByPlaceholder("Enter Last Name").fill(lastName);
+
       await page.getByPlaceholder("Enter Phone Number").fill(phone);
 
 
@@ -58,7 +57,6 @@ test.describe("Test Users Page ", () => {
       await row.locator('button[aria-haspopup="menu"]').click();
       await page.getByRole("menuitem", { name: /edit/i }).click();
 
-      await page.getByPlaceholder("Enter First Name").fill(updatedName);
       await page.getByPlaceholder("Enter Phone Number").fill(updatedPhone);
       await page.getByRole("button", { name: /Udpate Farmer/i }).click();
 

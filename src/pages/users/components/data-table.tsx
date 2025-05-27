@@ -122,13 +122,13 @@ export function DataTable<TData, TValue>({
       enableSorting: false,
       enableHiding: false,
     },
-    {
-      accessorFn: row => `${row?.firstName}  ${row?.lastName ?? ''}`,
-      id: 'fullName',
-      header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
-      cell: ({ row }) => <span>{row.getValue('fullName')}</span>,
-      enableHiding: false,
-    },
+    // {
+    //   accessorFn: row => `${row?.firstName}  ${row?.lastName ?? ''}`,
+    //   id: 'fullName',
+    //   header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
+    //   cell: ({ row }) => <span>{row.getValue('fullName')}</span>,
+    //   enableHiding: false,
+    // },
     {
       accessorKey: 'email',
       header: ({ column }) => <DataTableColumnHeader column={column} title='Email' />,

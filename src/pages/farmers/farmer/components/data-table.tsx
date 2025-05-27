@@ -175,9 +175,9 @@ export function DataTable<TData, TValue>({
 
 
     {
-      accessorKey: 'amcosMemberID',
+      accessorKey: 'amcosMemberId',
       header: ({ column }) => <DataTableColumnHeader column={column} title='AMCOS Member ID' />,
-      cell: ({ row }) => <span>{row.getValue('amcosMemberID')}</span>,
+      cell: ({ row }) => <span>{row.getValue('amcosMemberId')}</span>,
       enableSorting: true,
       enableHiding: false,
     },

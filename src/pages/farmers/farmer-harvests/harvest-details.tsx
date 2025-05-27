@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Package, Scale, Tag } from "lucide-react";
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router-dom';
-import { retrieveFarmerHarvest } from '@/helpers/api-helper';
+import { retreiveCrop, retrieveCollectionCenter, retrieveFarmer, retrieveFarmerHarvest, retrieveFarmerWithUserId, retriveAmcos } from '@/helpers/api-helper';
 import { snakeToCamelCase } from "@/lib/utils";
 
 // Type definitions
@@ -25,9 +25,12 @@ interface Bag {
 
 interface HarvestData {
   id: number;
-  farmer: number;
-  farmerName: string;
-  farmerPhoneNumber: string;
+  farmer: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+  }
   grossWeight: string;
   netWeight: string;
   packagingWeight: string;
@@ -36,17 +39,26 @@ interface HarvestData {
   uom: string;
   packaging: string;
   receiptNumber: string;
-  amcos: number;
+  amcos: {
+    id: string;
+    name: string;
+  };
   amcosName: string;
   registar: number;
   registarName: string;
-  crop: number;
+  crop: {
+    id: string;
+    name: string;
+  }
   cropName: string;
   cropGrade: number;
   cropGradeName: string;
-  collectionCenter: number;
+  collectionCenter: {
+    id: string;
+    name: string;
+  };
   collectionCenterName: string;
-  receivedAt: string;
+  createdAt: string;
 }
 
 interface HarvestDetailsTableProps {
@@ -54,7 +66,6 @@ interface HarvestDetailsTableProps {
 }
 
 const HarvestDetailsTable: React.FC<HarvestDetailsTableProps> = ({ harvestData }) => {
-
 
   return (
     <Card className="mt-8">
@@ -70,13 +81,13 @@ const HarvestDetailsTable: React.FC<HarvestDetailsTableProps> = ({ harvestData }
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <p className="text-sm"><span className="font-medium">Receipt Number:</span> {harvestData?.receiptNumber}</p>
-              <p className="text-sm"><span className="font-medium">AMCOS:</span> {harvestData?.amcosName}</p>
-              <p className="text-sm"><span className="font-medium">Collection Center:</span> {harvestData?.collectionCenterName}</p>
+              <p className="text-sm"><span className="font-medium">AMCOS:</span> {harvestData?.amcos.name}</p>
+              <p className="text-sm"><span className="font-medium">Collection Center:</span> {harvestData?.collectionCenter.name}</p>
             </div>
             <div className="space-y-2">
-              <p className="text-sm"><span className="font-medium">Crop:</span> {harvestData?.cropName}</p>
+              <p className="text-sm"><span className="font-medium">Crop:</span> {harvestData?.crop.name}</p>
               <p className="text-sm"><span className="font-medium">Grade:</span> {harvestData?.cropGradeName}</p>
-              <p className="text-sm"><span className="font-medium">Received:</span> {new Date(harvestData?.receivedAt).toLocaleDateString()}</p>
+              <p className="text-sm"><span className="font-medium">Received:</span> {new Date(harvestData?.createdAt).toLocaleDateString()}</p>
             </div>
           </div>
 
@@ -118,6 +129,15 @@ const FarmerDetailsPage: React.FC = () => {
     queryKey: ['farmer-harvest-details', params?.id],
     queryFn: async () => {
       const response: any = await retrieveFarmerHarvest(`${params?.id}`);
+      const farmerData: any = await retrieveFarmerWithUserId(`${response.farmer_id}`);
+      const crop: any = await retreiveCrop(response.crop);
+      const amcos: any = await retriveAmcos(response.amcos);
+      const collectionCenter: any = await retrieveCollectionCenter(response.collection_center);
+      if (response.total < 1) throw new Error('Farmer profile not found')
+      response.farmer = farmerData.data[0];
+      response.crop = crop
+      response.amcos = amcos
+      response.collectionCenter = collectionCenter
       return snakeToCamelCase(response);
     },
   });
@@ -148,17 +168,17 @@ const FarmerDetailsPage: React.FC = () => {
                 <div className="flex-grow">
                   <div className="flex flex-col md:flex-row justify-between mb-4">
                     <div>
-                      <h1 className="text-3xl font-bold mb-2">{harvestData?.farmerName}</h1>
+                      <h1 className="text-3xl font-bold mb-2">{harvestData?.farmer.firstName} {harvestData?.farmer.lastName}</h1>
                       <div className="flex items-center gap-2 mb-2">
                         <Badge variant="outline" className="text-sm">
-                          Phone: {harvestData?.farmerPhoneNumber}
+                          Phone: {harvestData?.farmer.phoneNumber}
                         </Badge>
                       </div>
                     </div>
                     <div className="flex gap-4 mt-4 md:mt-0">
 
                       <Button variant="default" size="sm"
-                        onClick={() => navigate(`/dashboard/farmer-harvests/${harvestData?.farmer}`)}
+                        onClick={() => navigate(`/dashboard/farmer-harvests/${harvestData?.farmer.id}`)}
                       >
                         <Eye className="w-4 h-4 mr-2" />
                         View Farmer

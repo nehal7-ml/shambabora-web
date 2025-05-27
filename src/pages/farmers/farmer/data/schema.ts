@@ -6,6 +6,11 @@ const relatedData = z.object({
   name: z.string(),
 })
 
+const user = z.object({
+  id: z.string(),
+  email: z.string().email(),
+});
+
 export const schema = z.object({
   id: z.string(),
 
@@ -27,7 +32,7 @@ export const schema = z.object({
   voterId: z.string().nullable(),
 
 
-  phoneNumber: z.string().regex(/^\d+$/).nullable(),
+  phoneNumber: z.string().nullable(),
 
   amcosMemberId: z.string().nullable(),
 
@@ -35,6 +40,7 @@ export const schema = z.object({
   secondaryCrop: z.number().nullable().optional(),
 
   amcos: relatedData.nullable(),
+  user: user.nullable(),
 });
 
 

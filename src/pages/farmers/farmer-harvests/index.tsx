@@ -82,7 +82,7 @@ export default function Harvests() {
       { mainKey: 'collectionCenter', sourceArrayName: 'collectionCenter', linkedKey: 'id', newPropertyName: 'collectionCenter' },
       { mainKey: 'crop', sourceArrayName: 'crop', linkedKey: 'id', newPropertyName: 'crop' },
       { mainKey: 'receivedBy', sourceArrayName: 'receivedBy', linkedKey: 'id', newPropertyName: 'receivedBy' },
-      { mainKey: 'farmer', sourceArrayName: 'farmer', linkedKey: 'id', newPropertyName: 'farmer' }
+      { mainKey: 'farmerId', sourceArrayName: 'farmer', linkedKey: 'id', newPropertyName: 'farmer' }
     ])
 
     return data as DataSchema[]

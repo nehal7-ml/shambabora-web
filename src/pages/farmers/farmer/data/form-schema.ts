@@ -2,6 +2,7 @@
 import { z } from 'zod';
 
 export const formSchema = z.object({
+  email: z.string().email({ message: 'Invalid email address' }).optional(),
   firstName: z.string().min(1, { message: 'Please enter first name' }),
   lastName: z.string().min(1, { message: 'Please enter last name' }),
   dob: z
@@ -32,6 +33,7 @@ export const formSchema = z.object({
     errorMap: () => ({ message: "Please select a valid education level" }),
   }),
 
+  role: z.string().default("farmer"),
   image: z.any(),
   amcos: z.any(),
   ttbNumber: z.string().optional(),

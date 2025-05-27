@@ -17,7 +17,7 @@ const farmerSchema = z.object({
   id: z.string(),
   firstName: z.string().nullable().optional(),
   lastName: z.string().nullable().optional(),
-  email: z.string(),
+  email: z.string().nullable().optional(),
 })
 export const bagSchema = z.object({
   grade: z.string(),

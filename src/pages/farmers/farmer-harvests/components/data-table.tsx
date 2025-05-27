@@ -121,9 +121,9 @@ export function DataTable<TData, TValue>({
       enableHiding: false,
     },
     {
-      accessorFn: (row) => row.farmer.email,
+      accessorFn: (row) => row.farmer?.email ?? "NA",
       accessorKey: 'farmer',
-      header: ({ column }) => <DataTableColumnHeader column={column} title='Farmer ID' />,
+      header: ({ column }) => <DataTableColumnHeader column={column} title='Farmer email' />,
       cell: ({ row }) => <span>{row.getValue('farmer')}</span>,
       enableSorting: true,
       enableHiding: false,

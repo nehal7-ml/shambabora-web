@@ -11,7 +11,7 @@ export const bagFormSchema = z.object({
 
 
 export const formSchema = z.object({
-  farmer: z.string().min(1, { message: 'Please select farmer' }),
+  farmerId: z.string().min(1, { message: 'Please select farmer' }),
   receivedBy: z.string().min(1, { message: 'Please select received by' }),
   receiptNumber: z.string().min(1, { message: 'Please enter member ID' }),
   tumeNumber: z.string().min(1, { message: 'Please enter tume number' }),

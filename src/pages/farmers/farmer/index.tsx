@@ -6,7 +6,7 @@ import { DataTable } from './components/data-table'
 import { columns } from './components/columns'
 // import { regions } from './data/data'
 import { useQuery } from '@tanstack/react-query'
-import { getAMCOSs, getFarmers } from '@/helpers/api-helper'
+import { getAMCOSs, getFarmers, getUsersWithRole } from '@/helpers/api-helper'
 import { connectArrays, snakeToCamelCase } from '@/lib/utils'
 import { useMemo } from 'react'
 import { DataSchema } from './data/schema'
@@ -28,18 +28,27 @@ export default function Farmer() {
   }
   )
 
+  const { data: farmerUser, isLoading: farmerUserLoading } = useQuery({
+    queryKey: ["farmerUser"],
+    queryFn: async () => {
+      const response: any = await getUsersWithRole('farmer');
+      return snakeToCamelCase(response.data);
+    },
+  });
+
 
   const farmerData = useMemo<DataSchema[]>(() => {
-    if (isLoading || amcosLoading) return
+    if (isLoading || farmerUserLoading || amcosLoading) return []
     const data = connectArrays<DataSchema>(farmers, {
       amcos: amcos,
+      farmerUser: farmerUser
     }, [
-      { mainKey: 'amcos', sourceArrayName: 'amcos', linkedKey: 'id', newPropertyName: 'amcos' }
+      { mainKey: 'amcos', sourceArrayName: 'amcos', linkedKey: 'id', newPropertyName: 'amcos' },
+      { mainKey: 'user', sourceArrayName: 'farmerUser', linkedKey: 'id', newPropertyName: 'user' }
     ])
 
     return data
-  }, [farmers, amcos, isLoading, amcosLoading])
-    console.log("farmerData", farmerData, amcos);
+  }, [farmers, amcos, farmerUser, isLoading, amcosLoading])
 
   return (
     <Layout>

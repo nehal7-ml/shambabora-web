@@ -11,10 +11,10 @@ import { getUsers } from '@/helpers/api-helper'
 
 export default function Users() {
   const { data: users, isLoading } = useQuery({
-    queryKey: ["farmers"],
+    queryKey: ["users"],
     queryFn: async () => {
       const response: any = await getUsers();
-      console.log(response);
+      console.log("users", response);
       return snakeToCamelCase(response);
     },
   });

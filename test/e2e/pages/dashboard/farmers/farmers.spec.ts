@@ -14,11 +14,13 @@ test("Create → Edit -> View → Delete a Farmer", async ({ page }) => {
   await page.getByText(/loading/i).waitFor({ state: "detached" });
 
   const uniqueSuffix = Date.now();
+  const emailId = `test${uniqueSuffix}@gmail.com`;
   const originalFirstName = `TestFirst-${uniqueSuffix}`;
   const updatedFirstName = `${originalFirstName}-Edited`;
   await test.step("Create Farmer", async () => {
     await page.getByRole("button", { name: "Add Farmer" }).click();
 
+    await page.getByPlaceholder("Enter Email").fill(emailId);
     await page.getByPlaceholder("Enter First Name").fill(originalFirstName);
     await page.getByPlaceholder("Enter Last Name").fill("TestLast");
     await page.getByPlaceholder("Enter Date of Birth").fill("1990-01-01");

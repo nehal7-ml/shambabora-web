@@ -28,7 +28,7 @@ export const COLLECTION_CENTEER = `${DataBaseUrl}/collection-center/`;
 
 //FARMERS && HARVESTS
 export const FARMERS = `${DataBaseUrl}/farmer/`;
-export const FARMS = `${DataBaseUrl}/farms/`;
+export const FARMS = `${DataBaseUrl}/farm/`;
 export const FARMERS_HARVERSTS = `${DataBaseUrl}/harvest/`;
 
 

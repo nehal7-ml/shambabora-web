@@ -51,7 +51,7 @@ interface AddEditFarmerProps {
     firstName: string
     lastName: string
     phoneNumber: string
-   
+
     // mainCrop: number
     // secondaryCrop: number
   } | null
@@ -83,8 +83,6 @@ const AddEditFarmer = ({
       email: initialData?.email || '',
       password: initialData?.password || '',
       role: initialData?.role || 'farmer',
-      firstName: initialData?.firstName || '',
-      lastName: initialData?.lastName || '',
       phoneNumber: initialData?.phoneNumber || '',
 
     },
@@ -206,38 +204,38 @@ const AddEditFarmer = ({
                     </FormItem>
 
                   )} />
-
-                <FormField
-                  control={form.control}
-                  name='firstName'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        First Name <span className='text-red-500'>*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder='Enter First Name' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='lastName'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Last Name <span className='text-red-500'>*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder='Enter Last Name' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {/**/}
+                {/* <FormField */}
+                {/*   control={form.control} */}
+                {/*   name='firstName' */}
+                {/*   render={({ field }) => ( */}
+                {/*     <FormItem> */}
+                {/*       <FormLabel> */}
+                {/*         First Name <span className='text-red-500'>*</span> */}
+                {/*       </FormLabel> */}
+                {/*       <FormControl> */}
+                {/*         <Input placeholder='Enter First Name' {...field} /> */}
+                {/*       </FormControl> */}
+                {/*       <FormMessage /> */}
+                {/*     </FormItem> */}
+                {/*   )} */}
+                {/* /> */}
+                {/**/}
+                {/* <FormField */}
+                {/*   control={form.control} */}
+                {/*   name='lastName' */}
+                {/*   render={({ field }) => ( */}
+                {/*     <FormItem> */}
+                {/*       <FormLabel> */}
+                {/*         Last Name <span className='text-red-500'>*</span> */}
+                {/*       </FormLabel> */}
+                {/*       <FormControl> */}
+                {/*         <Input placeholder='Enter Last Name' {...field} /> */}
+                {/*       </FormControl> */}
+                {/*       <FormMessage /> */}
+                {/*     </FormItem> */}
+                {/*   )} */}
+                {/* /> */}
 
                 {/* Sex Select Field */}
                 <FormField
