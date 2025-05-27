@@ -425,7 +425,7 @@ const FarmerDetailsPage = () => {
                         Total Harvests
                       </div>
                       <div className='text-2xl font-semibold'>
-                        {farmData?.length || 0}
+                        {harvestData?.length || 0}
                       </div>
                     </div>
                   </div>
