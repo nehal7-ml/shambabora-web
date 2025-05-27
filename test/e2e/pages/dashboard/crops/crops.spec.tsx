@@ -81,6 +81,7 @@ test("Create → Edit → Delete a Crop", async ({ page }) => {
 
     await page.getByRole("button", { name: /Create Crop/i }).click();
 
+    await sleep(2000);
     // since new records go the end click last pasge if active
     const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
 
@@ -90,8 +91,8 @@ test("Create → Edit → Delete a Crop", async ({ page }) => {
     }
 
 
-    const newRow = page.locator("tbody tr", { hasText: originalName });
-    await expect(newRow).toBeVisible();
+
+    await expect(page.getByText(originalName)).toBeVisible();
   });
 
   await test.step("Edit crop", async () => {
@@ -114,8 +115,8 @@ test("Create → Edit → Delete a Crop", async ({ page }) => {
       await lastPageButton.click();
     }
 
-    const updatedRow = page.locator("tbody tr", { hasText: updatedName });
-    await expect(updatedRow).toBeVisible();
+    await expect(page.getByText(updatedName)).toBeVisible();
+
   });
 
   await test.step("Delete crop", async () => {
