@@ -1,5 +1,6 @@
 
 import { test, expect } from "@playwright/test";
+import { sleep } from "../../../../utls";
 
 test("Navigation on the Manage Amcos menu", async ({ page }) => {
   await page.goto("/sign-in");
@@ -62,6 +63,13 @@ test("Create → Edit → Delete an MCU", async ({ page }) => {
 
     await page.getByRole("button", { name: /Create MCU/i }).click();
 
+    await sleep(2000);
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
     const newRow = page.locator("tbody tr", { hasText: originalName });
     await expect(newRow).toBeVisible();
   });
@@ -77,6 +85,13 @@ test("Create → Edit → Delete an MCU", async ({ page }) => {
     await input.fill(updatedName);
 
     await page.getByRole("button", { name: /update/i }).click();
+    await sleep(1000);
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
 
     const updatedRow = page.locator("tbody tr", { hasText: updatedName });
     await expect(updatedRow).toBeVisible();
@@ -90,7 +105,16 @@ test("Create → Edit → Delete an MCU", async ({ page }) => {
     await page.getByRole("menuitem", { name: /delete/i }).click();
 
     const confirmButton = page.getByRole("button", { name: /delete/i });
+
     await confirmButton.click();
+    await sleep(2000);
+
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
 
     await expect(page.locator("tbody tr", { hasText: updatedName })).toHaveCount(0);
   });

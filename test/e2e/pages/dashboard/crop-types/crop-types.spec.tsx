@@ -1,5 +1,6 @@
 
 import { test, expect } from "@playwright/test";
+import { sleep } from "../../../../utls";
 
 test("Navigation on the Crop types page", async ({ page }) => {
   await page.goto("/sign-in");
@@ -55,6 +56,7 @@ test("Create → Edit → Delete a Crop Type", async ({ page }) => {
     await page.getByPlaceholder("Enter CropType name").fill(originalName);
 
     await page.getByRole("button", { name: /create/i }).click();
+    await sleep(2000);
     // since new records go the end click last pasge if active
     const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
 
@@ -79,6 +81,7 @@ test("Create → Edit → Delete a Crop Type", async ({ page }) => {
     await input.fill(updatedName);
 
     await page.getByRole("button", { name: /update/i }).click();
+    await sleep(1000);
     // since new records go the end click last pasge if active
     const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
 
@@ -102,6 +105,13 @@ test("Create → Edit → Delete a Crop Type", async ({ page }) => {
     // Confirm deletion
     const confirm = page.getByRole("button", { name: /confirm|delete/i });
     await confirm.click();
+    await sleep(1000);
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
 
     await expect(page.locator("tbody tr", { hasText: updatedName })).toHaveCount(0);
   });

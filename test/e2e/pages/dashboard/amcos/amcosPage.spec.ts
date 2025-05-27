@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { sleep } from "../../../../utls";
 
 test("Create → Edit → Delete AMCOS", async ({ page }) => {
   await page.goto("/sign-in");
@@ -51,7 +52,7 @@ test("Create → Edit → Delete AMCOS", async ({ page }) => {
     await page.getByPlaceholder("Enter Website").fill(`https://testamcos${uniqueSuffix}.com`);
 
     await page.getByRole("button", { name: /create amcos/i }).click();
-
+    await sleep(2000);
     // since new records go the end click last pasge if active
     const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
 
@@ -75,6 +76,7 @@ test("Create → Edit → Delete AMCOS", async ({ page }) => {
     await nameInput.fill(updatedName);
 
     await page.getByRole("button", { name: /update amcos/i }).click();
+    await sleep(1000);
 
     // since new records go the end click last pasge if active
     const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
@@ -95,7 +97,13 @@ test("Create → Edit → Delete AMCOS", async ({ page }) => {
 
     await page.getByRole("menuitem", { name: /delete/i }).click();
     await page.getByRole("button", { name: /delete/i }).click();
+    await sleep(2000);
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
 
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
     await expect(page.getByText(updatedName)).toHaveCount(0);
   });
 });

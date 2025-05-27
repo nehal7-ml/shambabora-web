@@ -59,7 +59,7 @@ test("Create → Edit → Delete a Collection Center", async ({ page }) => {
     await input.fill(updatedName);
 
     await page.getByRole("button", { name: /update/i }).click();
-
+    await sleep(1000);
     const updatedRow = page.locator("tbody tr", { hasText: updatedName });
     // since new records go the end click last pasge if active
     const lastPageButton = page.locator("button", { hasText: /Go to last page/i });

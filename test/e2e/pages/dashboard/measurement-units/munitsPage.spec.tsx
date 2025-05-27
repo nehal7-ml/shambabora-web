@@ -1,5 +1,6 @@
 
 import { test, expect } from "@playwright/test";
+import { sleep } from "../../../../utls";
 
 test("Navigation on the Measurement Units page", async ({ page }) => {
   await page.goto("/sign-in");
@@ -65,6 +66,15 @@ test("Create → Edit → Delete a Measurement Unit", async ({ page }) => {
 
     await page.getByRole("button", { name: /create/i }).click();
 
+    await sleep(2000);
+    // since new records go the end click last pasge if active
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
+
     const newRow = page.locator("tbody tr", { hasText: originalName });
     await expect(newRow).toBeVisible();
   });
@@ -84,6 +94,15 @@ test("Create → Edit → Delete a Measurement Unit", async ({ page }) => {
 
     await page.getByRole("button", { name: /update/i }).click();
 
+    await sleep(1000);
+    // since new records go the end click last pasge if active
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
+
     const updatedRow = page.locator("tbody tr", { hasText: updatedName });
     await expect(updatedRow).toContainText("WEIGHT");
   });
@@ -99,6 +118,13 @@ test("Create → Edit → Delete a Measurement Unit", async ({ page }) => {
     const confirmButton = page.getByRole("button", { name: /confirm|delete/i });
     await confirmButton.click();
 
+    await sleep(1000);
+    const lastPageButton = page.locator("button", { hasText: /Go to last page/i });
+
+    // Check if the button is enabled before clicking
+    if (!(await lastPageButton.isDisabled())) {
+      await lastPageButton.click();
+    }
     await expect(page.locator("tbody tr", { hasText: updatedName })).toHaveCount(0);
   });
 });
