@@ -339,103 +339,103 @@ const FarmerDetailsPage = () => {
         </div>
       </Layout.Header>
       <Layout.Body>
-        {isLoading ? <div > <LoaderCircle className="animate-spin h-10 w-10 text-white" /> </div> :
-          <div className=' '>
-            {/* Header Section */}
-            <div className='mb-8'>
-              <Card className='p-6'>
-                <div className='flex flex-col gap-6 md:flex-row'>
-                  {/* Profile Picture */}
-                  <div className='flex-shrink-0'>
-                    <div className='flex h-32 w-32 items-center justify-center overflow-hidden rounded-full bg-secondary/20'>
-                      {!farmerData?.image ? (
-                        <div className='flex h-full w-full items-center justify-center bg-primary text-3xl font-bold text-white'>
-                          {farmerData?.firstName?.[0] ?? 'F'}
-                          {farmerData?.lastName?.[0] ?? 'A'}
-                        </div>
-                      ) : (
-                        <img
-                          src={farmerData?.image}
-                          alt={farmerData?.name}
-                          className='h-full w-full object-cover'
-                        />
-                      )}
-                    </div>
-                  </div>
 
-                  {/* Farmer Info */}
-                  <div className='flex-grow'>
-                    <div className='mb-4 flex flex-col justify-between md:flex-row'>
-                      <div>
-                        <h1 className='mb-2 text-3xl font-bold'>
-                          {farmerData?.firstName} {farmerData?.lastName}
-                        </h1>
-                        <div className='mb-2 flex items-center gap-2'>
-                          <Badge variant='outline' className='text-sm'>
-                            ID: {farmerData?.idNumber}
-                          </Badge>
-
-                          <Badge
-                            variant={
-                              farmerData?.status === 'Active'
-                                ? 'default'
-                                : 'secondary'
-                            }
-                          >
-                            {farmerData?.status}
-                          </Badge>
-                        </div>
+        <div className=' '>
+          {/* Header Section */}
+          <div className='mb-8'>
+            <Card className='p-6'>
+              <div className='flex flex-col gap-6 md:flex-row'>
+                {/* Profile Picture */}
+                <div className='flex-shrink-0'>
+                  <div className='flex h-32 w-32 items-center justify-center overflow-hidden rounded-full bg-secondary/20'>
+                    {!farmerData?.image ? (
+                      <div className='flex h-full w-full items-center justify-center bg-primary text-3xl font-bold text-white'>
+                        {farmerData?.firstName?.[0] ?? 'F'}
+                        {farmerData?.lastName?.[0] ?? 'A'}
                       </div>
-                      <div className='mt-4 flex gap-4 md:mt-0'>
-                        {/* <Button variant="outline" size="sm">
+                    ) : (
+                      <img
+                        src={farmerData?.image}
+                        alt={farmerData?.name}
+                        className='h-full w-full object-cover'
+                      />
+                    )}
+                  </div>
+                </div>
+
+                {/* Farmer Info */}
+                <div className='flex-grow'>
+                  <div className='mb-4 flex flex-col justify-between md:flex-row'>
+                    <div>
+                      <h1 className='mb-2 text-3xl font-bold'>
+                        {farmerData?.firstName} {farmerData?.lastName}
+                      </h1>
+                      <div className='mb-2 flex items-center gap-2'>
+                        <Badge variant='outline' className='text-sm'>
+                          ID: {farmerData?.idNumber}
+                        </Badge>
+
+                        <Badge
+                          variant={
+                            farmerData?.status === 'Active'
+                              ? 'default'
+                              : 'secondary'
+                          }
+                        >
+                          {farmerData?.status}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className='mt-4 flex gap-4 md:mt-0'>
+                      {/* <Button variant="outline" size="sm">
                     <Mail className="w-4 h-4 mr-2" />
                     
                   </Button> */}
-                        <Button
-                          variant='default'
-                          size='sm'
-                          onClick={handleAddfarm}
-                        >
-                          <PlusCircle className='mr-2 h-4 w-4' />
-                          Add farm
-                        </Button>
+                      <Button
+                        variant='default'
+                        size='sm'
+                        onClick={handleAddfarm}
+                      >
+                        <PlusCircle className='mr-2 h-4 w-4' />
+                        Add farm
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Quick Stats */}
+                  <div className='mt-4 grid grid-cols-1 gap-4 md:grid-cols-3'>
+                    <div className='rounded-lg bg-secondary/10 p-4'>
+                      <div className='text-sm text-muted-foreground'>
+                        Total Farms
+                      </div>
+                      <div className='text-2xl font-semibold'>
+                        {farmData?.length || 0}
                       </div>
                     </div>
-
-                    {/* Quick Stats */}
-                    <div className='mt-4 grid grid-cols-1 gap-4 md:grid-cols-3'>
-                      <div className='rounded-lg bg-secondary/10 p-4'>
-                        <div className='text-sm text-muted-foreground'>
-                          Total Farms
-                        </div>
-                        <div className='text-2xl font-semibold'>
-                          {farmData?.length || 0}
-                        </div>
+                    <div className='rounded-lg bg-secondary/10 p-4'>
+                      <div className='text-sm text-muted-foreground'>
+                        Active Area
                       </div>
-                      <div className='rounded-lg bg-secondary/10 p-4'>
-                        <div className='text-sm text-muted-foreground'>
-                          Active Area
-                        </div>
-                        <div className='text-2xl font-semibold'>
-                          {totalArea || 0}
-                        </div>
+                      <div className='text-2xl font-semibold'>
+                        {totalArea || 0}
                       </div>
-                      <div className='rounded-lg bg-secondary/10 p-4'>
-                        <div className='text-sm text-muted-foreground'>
-                          Total Harvests
-                        </div>
-                        <div className='text-2xl font-semibold'>
-                          {farmData?.length || 0}
-                        </div>
+                    </div>
+                    <div className='rounded-lg bg-secondary/10 p-4'>
+                      <div className='text-sm text-muted-foreground'>
+                        Total Harvests
+                      </div>
+                      <div className='text-2xl font-semibold'>
+                        {farmData?.length || 0}
                       </div>
                     </div>
                   </div>
                 </div>
-              </Card>
-            </div>
-
-            {/* Tabs Section */}
-            <Tabs
+              </div>
+            </Card>
+          </div>
+          {/* Tabs Section */}
+          {isLoading ? <div className="w-full h-96 flex justify-center items-center"> <LoaderCircle className="animate-spin h-10 w-10 text-gray-700" /> </div> :
+            < Tabs
               value={selectedTab}
               onValueChange={setSelectedTab}
               className='w-full'
@@ -571,8 +571,8 @@ const FarmerDetailsPage = () => {
                   </CardContent>
                 </Card>
               </TabsContent>
-            </Tabs>
-          </div>}
+            </Tabs>}
+        </div>
       </Layout.Body>
       {/* Add Farm Modal */}
       {openFarmForm && <AddEditFarms initialData={farmInitialData} farmerId={params.id} farmerUserId={farmerData.user} mode={farmFormMode} handleCancel={() => setOpenFarmForm(false)} />}
@@ -584,7 +584,7 @@ const FarmerDetailsPage = () => {
         // @ts-ignore
         farm={selectedFarm}
       />
-    </Layout>
+    </Layout >
   )
 }
 
